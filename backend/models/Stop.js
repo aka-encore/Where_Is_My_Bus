@@ -33,4 +33,7 @@ const stopSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance indexes
+stopSchema.index({ route: 1, sequence: 1 });
+
 module.exports = mongoose.model('Stop', stopSchema);

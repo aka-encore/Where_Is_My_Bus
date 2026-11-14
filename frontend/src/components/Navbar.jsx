@@ -83,7 +83,7 @@ const Navbar = () => {
           >
             <img
               src="/logohorigental.svg"
-              alt="WhereIsMyBus"
+              alt="Where Is My Bus"
               className="nav-logo-img"
             />
           </Link>
@@ -176,7 +176,7 @@ const Navbar = () => {
               <div className="nav-drawer-logo">
                 <img
                   src="/logohorigental.svg"
-                  alt="WhereIsMyBus"
+                  alt="Where Is My Bus"
                   className="nav-logo-img"
                 />
               </div>

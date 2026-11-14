@@ -66,7 +66,8 @@ const getAssignments = async (_req, res) => {
         select: 'name numberPlate driver',
         populate: { path: 'driver', select: 'name username' }
       })
-      .populate('stop', 'name sequence');
+      .populate('stop', 'name sequence')
+      .lean();
     res.json(assignments);
   } catch (error) {
     console.error('getAssignments error:', error);
@@ -122,7 +123,8 @@ const getActiveTrips = async (_req, res) => {
     const trips = await Trip.find({ status: 'ONGOING' })
       .populate('bus', 'name numberPlate')
       .populate('driver', 'username name')
-      .populate('route', 'name');
+      .populate('route', 'name')
+      .lean();
     res.json(trips);
   } catch (error) {
     console.error('getActiveTrips error:', error);
@@ -137,7 +139,8 @@ const getEventHistory = async (req, res) => {
       .sort({ timestamp: -1 })
       .limit(limit)
       .populate('trip', 'bus driver')
-      .populate('stop', 'name sequence');
+      .populate('stop', 'name sequence')
+      .lean();
     res.json(events);
   } catch (error) {
     console.error('getEventHistory error:', error);

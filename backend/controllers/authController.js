@@ -101,7 +101,7 @@ const ensureDefaultAccounts = async () => {
   const admin = await User.findOne({ username: 'ad1' });
   if (!admin) {
     const hashedPassword = await hashPassword('ad1');
-    await User.create({ username: 'ad1', password: hashedPassword, role: 'admin', name: 'WhereIsMyBus Admin' });
+    await User.create({ username: 'ad1', password: hashedPassword, role: 'admin', name: 'Where Is My Bus Admin', firstLogin: false });
     console.log('⚠️  Seeded default admin account (ad1/ad1) - CHANGE THIS PASSWORD IN PRODUCTION!');
   }
 };

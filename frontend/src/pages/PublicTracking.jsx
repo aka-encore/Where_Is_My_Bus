@@ -56,39 +56,55 @@ const AnimatedBusMarker = ({ position }) => {
 const PublicTracking = () => {
     const { busName } = useParams();
     const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [hasLoaded, setHasLoaded] = useState(false);
+    const hasLoadedRef = useRef(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [busPosition, setBusPosition] = useState(null);
     const socketRef = useRef(null);
 
     // Fetch bus data
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
+        const fetchData = async (isInitial = false) => {
+            if (!hasLoadedRef.current || isInitial) {
+                setIsInitialLoading(true);
+            } else {
+                setIsRefreshing(true);
+            }
+
             try {
                 const res = await fetch(`${API_ROOT}/public/track/${encodeURIComponent(busName)}`);
                 const json = await res.json();
                 if (!res.ok || !json.found) {
-                    setError(json.message || 'Bus not found');
-                    setData(null);
+                    if (!hasLoadedRef.current) {
+                        setError(json.message || 'Bus not found');
+                        setData(null);
+                    }
                 } else {
                     setData(json);
-                    // Set initial bus position
+                    hasLoadedRef.current = true;
+                    setHasLoaded(true);
+                    setError(null);
+                    // Update bus position
                     const loc = json.trip?.lastLocation || json.bus?.lastKnownLocation;
                     if (loc?.lat && loc?.lng) {
                         setBusPosition([loc.lat, loc.lng]);
                     }
                 }
             } catch {
-                setError('Failed to connect. Check your internet connection.');
+                if (!hasLoadedRef.current) {
+                    setError('Failed to connect. Check your internet connection.');
+                }
             } finally {
-                setLoading(false);
+                setIsInitialLoading(false);
+                setIsRefreshing(false);
             }
         };
-        fetchData();
-        // Re-poll every 60s in case trip starts/ends
-        const interval = setInterval(fetchData, 60000);
+
+        fetchData(true);
+        // Re-poll every 60s silently in background
+        const interval = setInterval(() => fetchData(false), 60000);
         return () => clearInterval(interval);
     }, [busName]);
 
@@ -161,7 +177,7 @@ const PublicTracking = () => {
 
     // ── RENDER ──
 
-    if (loading) {
+    if (isInitialLoading && !hasLoaded) {
         return (
             <div style={styles.fullCenter}>
                 <div style={styles.spinner} />
@@ -170,7 +186,7 @@ const PublicTracking = () => {
         );
     }
 
-    if (error) {
+    if (error && !hasLoaded) {
         return (
             <div style={styles.fullCenter}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚌</div>
@@ -198,9 +214,9 @@ const PublicTracking = () => {
             {/* Header */}
             <header style={styles.header}>
                 <div style={styles.headerLeft}>
-                    <img src="/favicons/android-chrome-192x192.png" alt="WhereIsMyBus" style={styles.logo} />
+                    <img src="/favicons/android-chrome-192x192.png" alt="Where Is My Bus" style={styles.logo} />
                     <div>
-                        <h1 style={styles.headerTitle}>WhereIsMyBus</h1>
+                        <h1 style={styles.headerTitle}>Where Is My Bus</h1>
                         <p style={styles.headerSub}>Public Bus Tracking</p>
                     </div>
                 </div>
@@ -252,7 +268,7 @@ const PublicTracking = () => {
                         />
                     ))}
                     {routeLine.length > 1 && (
-                        <Polyline positions={routeLine} pathOptions={{ color: '#6366f1', weight: 3, opacity: 0.6 }} />
+                        <Polyline positions={routeLine} pathOptions={{ color: '#690907', weight: 3, opacity: 0.6 }} />
                     )}
                     <FitBounds positions={fitPositions} />
                 </MapContainer>
@@ -260,7 +276,7 @@ const PublicTracking = () => {
 
             {/* Footer */}
             <footer style={styles.footer}>
-                <p>Powered by <strong>WhereIsMyBus</strong> — RCEE Bus Tracking System</p>
+                <p>Powered by <strong>Where Is My Bus</strong> — RCEE Bus Tracking System</p>
             </footer>
         </div>
     );
@@ -288,7 +304,7 @@ const styles = {
     spinner: {
         width: 40, height: 40,
         border: '3px solid rgba(255,255,255,0.15)',
-        borderTop: '3px solid #3b82f6',
+        borderTop: '3px solid #690907',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite',
         marginBottom: '1rem'

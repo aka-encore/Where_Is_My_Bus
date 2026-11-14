@@ -80,7 +80,7 @@ const StopNameModal = ({ isOpen, defaultName, onConfirm, onCancel }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#690907] flex items-center justify-center">
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -108,7 +108,7 @@ const StopNameModal = ({ isOpen, defaultName, onConfirm, onCancel }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Main Street Station"
-              className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-slate-800/80 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/60 focus:ring-2 focus:ring-[#690907]/25 transition-all"
               autoComplete="off"
             />
           </div>
@@ -124,7 +124,7 @@ const StopNameModal = ({ isOpen, defaultName, onConfirm, onCancel }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 shadow-lg shadow-blue-500/25 transition-all"
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#690907] hover:bg-[#82110f] shadow-lg shadow-[#690907]/25 transition-all"
             >
               Add Stop
             </button>
@@ -150,13 +150,13 @@ const SortableStopRow = ({ stop, index, updateStopName, removeStop }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="group flex items-center gap-3 rounded-xl border border-white/10 bg-slate-800/60 p-3 transition-all hover:border-blue-500/30 hover:bg-slate-800/80"
+      className="group flex items-center gap-3 rounded-xl border border-white/10 bg-slate-800/60 p-3 transition-all hover:border-[#690907]/40 hover:bg-slate-800/80"
     >
       <div {...attributes} {...listeners} className="cursor-grab text-slate-500 hover:text-slate-300 active:cursor-grabbing transition-colors">
         <GripVertical size={16} />
       </div>
 
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-400/20 text-xs font-bold text-blue-400 border border-blue-500/20">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#690907]/20 text-xs font-bold text-[#E8D2B5] border border-[#690907]/30">
         {index + 1}
       </span>
 
@@ -374,8 +374,8 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
       className: 'search-pin-container',
       html: `
         <div style="position:relative; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
-          <div style="position:absolute; width:100%; height:100%; border-radius:50%; background:rgba(59,130,246,0.35); animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-          <div style="width:30px; height:30px; border-radius:50%; background:#2563eb; border:2.5px solid #ffffff; box-shadow:0 4px 14px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; color:#fff;">
+          <div style="position:absolute; width:100%; height:100%; border-radius:50%; background:rgba(105,9,7,0.35); animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+          <div style="width:30px; height:30px; border-radius:50%; background:#690907; border:2.5px solid #E8D2B5; box-shadow:0 4px 14px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; color:#F5F0E8;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
         </div>
@@ -397,7 +397,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
         <div style="font-size:11px; color:#94a3b8; line-height:1.35;">${place.display_name}</div>
       </div>
       <div style="display:flex; gap:6px; margin-top:8px;">
-        <button id="search-popup-add-btn" style="flex:1; background:#2563eb; color:#ffffff; border:none; padding:7px 12px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
+        <button id="search-popup-add-btn" style="flex:1; background:#690907; color:#ffffff; border:none; padding:7px 12px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
           ➕ Add as Stop
         </button>
         <button id="search-popup-dismiss-btn" style="background:rgba(255,255,255,0.12); color:#cbd5e1; border:none; padding:7px 10px; border-radius:8px; font-weight:500; font-size:12px; cursor:pointer;">
@@ -451,7 +451,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
   const initExistingData = () => {
     if (initialRoute && mapInstance.current) {
       const layer = L.polyline(initialRoute.coordinates.map(([lng, lat]) => [lat, lng]), {
-        color: '#6366f1',
+        color: '#690907',
         weight: 4
       }).addTo(mapInstance.current);
       layer.pm.enable();
@@ -565,7 +565,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
         const latlngs = newStops.map((s) => [s.lat, s.lng]);
         if (latlngs.length > 1) {
           const newPolyline = L.polyline(latlngs, {
-            color: '#6366f1',
+            color: '#690907',
             weight: 4
           }).addTo(mapInstance.current);
           newPolyline.pm.enable();
@@ -597,7 +597,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
       <div className="flex gap-2">
         <button
           type="button"
-          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#690907] hover:bg-[#82110f] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#690907]/25 transition disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSave}
           disabled={sortedStops.length < 2}
         >
@@ -612,7 +612,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
               if (polylineLayer.current) polylineLayer.current.remove();
               if (manualReindex.length > 1) {
                 const latlngs = manualReindex.map((s) => [s.lat, s.lng]);
-                const newPolyline = L.polyline(latlngs, { color: '#6366f1', weight: 4 }).addTo(mapInstance.current);
+                const newPolyline = L.polyline(latlngs, { color: '#690907', weight: 4 }).addTo(mapInstance.current);
                 newPolyline.pm.enable();
                 polylineLayer.current = newPolyline;
                 setRouteGeom(lineToGeoJSON(newPolyline));
@@ -627,8 +627,8 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
       </div>
 
       {/* Help Text */}
-      <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 flex items-start gap-2">
-        <Search className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
+      <div className="p-2.5 rounded-xl bg-[#690907]/15 border border-[#690907]/30 text-xs text-[#E8D2B5] flex items-start gap-2">
+        <Search className="w-4 h-4 shrink-0 mt-0.5 text-[#E8D2B5]" />
         <span>Use the search bar on top of the map to quickly search areas (e.g. <em>Narhe, Talegaon</em>) and add stops.</span>
       </div>
 
@@ -683,8 +683,8 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
         className="absolute top-4 left-1/2 -translate-x-1/2 z-[600] w-full max-w-lg px-4 pointer-events-auto"
       >
         <div className="relative">
-          <div className="flex items-center gap-2.5 bg-slate-900/95 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl px-3.5 py-2.5 transition-all focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:border-blue-500">
-            <Search className="w-4 h-4 text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2.5 bg-slate-900/95 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl px-3.5 py-2.5 transition-all focus-within:ring-2 focus-within:ring-[#690907]/50 focus-within:border-[#690907]">
+            <Search className="w-4 h-4 text-[#E8D2B5] shrink-0" />
             <input
               type="text"
               value={searchQuery}
@@ -704,7 +704,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
               autoComplete="off"
             />
             {isSearching && (
-              <Loader2 className="w-4 h-4 text-blue-400 animate-spin shrink-0" />
+              <Loader2 className="w-4 h-4 text-[#E8D2B5] animate-spin shrink-0" />
             )}
             {searchQuery && !isSearching && (
               <button
@@ -731,14 +731,14 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
               {searchResults.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-3 hover:bg-blue-600/15 cursor-pointer transition group"
+                  className="flex items-center justify-between p-3 hover:bg-[#690907]/20 cursor-pointer transition group"
                   onClick={() => handleSelectSearchResult(item)}
                 >
                   <div className="flex items-start gap-2.5 min-w-0 pr-2">
                     <div className={`p-2 rounded-xl mt-0.5 shrink-0 ${
                       item.source === 'database'
                         ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-blue-500/20 text-blue-400'
+                        : 'bg-[#690907]/25 text-[#E8D2B5]'
                     }`}>
                       <MapPin className="w-4 h-4" />
                     </div>
@@ -765,7 +765,7 @@ const MapEditor = ({ initialRoute = null, initialStops = [], onSave, panelContai
                       addStopAtCoordinates(item.lat, item.lng, item.name);
                       setIsDropdownOpen(false);
                     }}
-                    className="shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition"
+                    className="shrink-0 flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#690907] hover:bg-[#82110f] text-white shadow-sm transition"
                     title="Add this location directly as a route stop"
                   >
                     <Plus className="w-3.5 h-3.5" />

@@ -1,14 +1,14 @@
-# TrackMate: Real-Time School Bus Tracking Using WebSocket-Based Live Updates and Route-Aware ETA Estimation
+# Where Is My Bus: Real-Time School Bus Tracking Using WebSocket-Based Live Updates and Route-Aware ETA Estimation
 
 ## Abstract
 
-TrackMate is a web-based school bus tracking platform developed for Zeal College of Enginerring and Reaserch.Narhe Pune The system combines a React frontend, an Express and Socket.IO backend, and MongoDB storage to deliver live bus visibility for administrators, drivers, students, and public viewers. The platform supports route management, live trip control, ETA calculation, stop-event detection, public tracking links, push notifications, and a missed-bus redirect workflow. Unlike a static timetable model, TrackMate continuously updates trip state through driver GPS broadcasts and derives ETA using road-routing, smoothing, cached trip state, and segment-level fallback logic. The result is an operational transport platform that improves visibility, reduces uncertainty for commuters, and provides a structured base for future transport analytics.
+Where Is My Bus is a web-based school bus tracking platform developed for Zeal College of Enginerring and Reaserch.Narhe Pune The system combines a React frontend, an Express and Socket.IO backend, and MongoDB storage to deliver live bus visibility for administrators, drivers, students, and public viewers. The platform supports route management, live trip control, ETA calculation, stop-event detection, public tracking links, push notifications, and a missed-bus redirect workflow. Unlike a static timetable model, Where Is My Bus continuously updates trip state through driver GPS broadcasts and derives ETA using road-routing, smoothing, cached trip state, and segment-level fallback logic. The result is an operational transport platform that improves visibility, reduces uncertainty for commuters, and provides a structured base for future transport analytics.
 
 ## 1. Introduction
 
 Educational institutions with fixed bus routes still face dynamic travel conditions such as traffic, delays, route congestion, and inconsistent departure timing. A paper schedule or group-messaging approach cannot provide accurate live movement data. Students often reach stops too early, miss buses without recovery options, or lack confidence about whether the bus is delayed or already gone.
 
-TrackMate was designed to address that gap using a browser-first architecture. The project focuses on three practical goals:
+Where Is My Bus was designed to address that gap using a browser-first architecture. The project focuses on three practical goals:
 
 1. Make live transport visibility available without a native mobile app.
 2. Give transport administrators a centralized operational dashboard.
@@ -16,7 +16,7 @@ TrackMate was designed to address that gap using a browser-first architecture. T
 
 ## 2. Problem Definition
 
-The transportation problem addressed by TrackMate has five parts:
+The transportation problem addressed by Where Is My Bus has five parts:
 
 1. Lack of live location visibility for buses.
 2. Static ETA assumptions that ignore current road conditions.
@@ -39,7 +39,7 @@ The implemented system aims to:
 
 ## 4. Architecture Overview
 
-TrackMate uses a layered web architecture.
+Where Is My Bus uses a layered web architecture.
 
 ### 4.1 Presentation Layer
 
@@ -148,7 +148,7 @@ The live trip sequence is:
 
 ## 8. ETA and Stop Detection
 
-TrackMate does not rely on a single ETA strategy. It combines:
+Where Is My Bus does not rely on a single ETA strategy. It combines:
 
 - road-duration lookup through OSRM,
 - short-term caching of route duration results,
@@ -172,7 +172,7 @@ The redirect workflow is one of the system's distinctive features. When a studen
 
 ## 10. Notifications and Communication
 
-TrackMate supports two communication modes:
+Where Is My Bus supports two communication modes:
 
 - Web Push notifications using VAPID keys when configured.
 - Email workflows for onboarding and password reset.
@@ -213,4 +213,4 @@ Current limitations include:
 
 ## 14. Conclusion
 
-TrackMate is a practical real-time transport platform rather than a prototype-only demo. Its architecture already supports live operations, role-based dashboards, event logging, and public bus visibility. The next stage of improvement should focus on endpoint consolidation, stronger test coverage, and deeper analytics rather than a major architectural rewrite.
+Where Is My Bus is a practical real-time transport platform rather than a prototype-only demo. Its architecture already supports live operations, role-based dashboards, event logging, and public bus visibility. The next stage of improvement should focus on endpoint consolidation, stronger test coverage, and deeper analytics rather than a major architectural rewrite.

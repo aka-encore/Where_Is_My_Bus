@@ -29,4 +29,7 @@ const routeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance index for list sorting
+routeSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Route', routeSchema);

@@ -14,7 +14,8 @@ const ProtectedRoute = ({ children, roles }) => {
   }
 
   if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/login" replace />;
+    const fallbackPath = user.role === 'admin' ? '/admin' : (user.role === 'driver' ? '/driver' : '/student');
+    return <Navigate to={fallbackPath} replace />;
   }
 
   return children;

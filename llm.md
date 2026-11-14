@@ -1,12 +1,12 @@
-# TrackMate - LLM Knowledge Base
+# Where Is My Bus - LLM Knowledge Base
 
 ## 1. Purpose
 
-This file is a current working knowledge base for future AI-assisted maintenance of the TrackMate repository. It is intentionally shorter than the previous version and focuses on the information that is most useful for reasoning about the present codebase.
+This file is a current working knowledge base for future AI-assisted maintenance of the Where Is My Bus repository. It is intentionally shorter than the previous version and focuses on the information that is most useful for reasoning about the present codebase.
 
 ## 2. Project Identity
 
-- Project name: TrackMate
+- Project name: Where Is My Bus
 - Domain: school bus tracking and transport operations
 - Architecture: React frontend plus Express and Socket.IO backend
 - Primary datastore: MongoDB

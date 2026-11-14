@@ -47,6 +47,7 @@ router.get('/export-trips', exportLimiter, require('../controllers/adminControll
 router.use(authMiddleware, roleMiddleware('admin'));
 
 router.get('/dashboard', getDashboardStats);
+router.get('/stats', getDashboardStats); // alias for /admin/stats compatibility
 router.post('/assignments', assignStudent);
 router.get('/assignments', getAssignments);
 router.put('/assignments/:id', updateAssignment);

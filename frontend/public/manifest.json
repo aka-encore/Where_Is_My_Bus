@@ -1,10 +1,10 @@
 {
-  "name": "WhereIsMyBus",
-  "short_name": "WhereIsMyBus",
+  "name": "Where Is My Bus",
+  "short_name": "Where Is My Bus",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3B82F6",
+  "background_color": "#F5F0E8",
+  "theme_color": "#690907",
   "icons": [
     {
       "src": "/favicons/favicon-32x32.png",

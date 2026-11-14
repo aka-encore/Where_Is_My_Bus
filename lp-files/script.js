@@ -1,5 +1,5 @@
 /* ========================================
-   TrackMate - Landing Page JavaScript
+   Where Is My Bus - Landing Page JavaScript
    ======================================== */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -450,5 +450,5 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('loaded');
     });
     
-    console.log('🚌 TrackMate Landing Page Initialized');
+    console.log('🚌 Where Is My Bus Landing Page Initialized');
 });

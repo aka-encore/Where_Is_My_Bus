@@ -23,12 +23,12 @@ const refreshRouteStops = async (routeId) => {
 };
 
 const ensureStopsExistForRoute = async (routeId) => {
-  const existingStops = await Stop.find({ route: routeId }).sort({ sequence: 1 });
+  const existingStops = await Stop.find({ route: routeId }).sort({ sequence: 1 }).lean();
   if (existingStops.length) {
     return existingStops;
   }
 
-  const route = await Route.findById(routeId);
+  const route = await Route.findById(routeId).lean();
   if (!route || !Array.isArray(route.stops) || route.stops.length === 0) {
     return [];
   }
@@ -45,7 +45,7 @@ const ensureStopsExistForRoute = async (routeId) => {
   }
 
   await Stop.insertMany(docs);
-  return Stop.find({ route: routeId }).sort({ sequence: 1 });
+  return Stop.find({ route: routeId }).sort({ sequence: 1 }).lean();
 };
 
 const createStop = async (req, res) => {

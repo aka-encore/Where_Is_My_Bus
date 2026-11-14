@@ -29,8 +29,8 @@ const TrackSelector = () => {
     return (
         <div style={styles.page}>
             <div style={styles.card}>
-                <img src="/favicons/android-chrome-192x192.png" alt="WhereIsMyBus" style={styles.logo} />
-                <h1 style={styles.title}>WhereIsMyBus</h1>
+                <img src="/favicons/android-chrome-192x192.png" alt="Where Is My Bus" style={styles.logo} />
+                <h1 style={styles.title}>Where Is My Bus</h1>
                 <p style={styles.subtitle}>Real-Time Bus Tracking</p>
 
                 <div style={styles.form}>
@@ -136,7 +136,7 @@ const styles = {
         padding: '0.85rem',
         borderRadius: '0.75rem',
         border: 'none',
-        background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+        background: 'linear-gradient(135deg, #690907, #82110f)',
         color: '#fff',
         fontSize: '1rem',
         fontWeight: 700,

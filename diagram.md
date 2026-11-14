@@ -1,12 +1,12 @@
 # CHAPTER 4 - SYSTEM DESIGN DIAGRAMS
 
-This file contains Mermaid code for the Chapter 4 diagrams of TrackMate. The diagrams are based on the current implementation in the React frontend, Express and Socket.IO backend, and MongoDB data layer.
+This file contains Mermaid code for the Chapter 4 diagrams of Where Is My Bus. The diagrams are based on the current implementation in the React frontend, Express and Socket.IO backend, and MongoDB data layer.
 
 ---
 
 ## 4.2 System Architecture
 
-Figure 4.1: System Architecture of TrackMate
+Figure 4.1: System Architecture of Where Is My Bus
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,7 @@ flowchart LR
 
 ## 4.3 Use Case Diagram
 
-Figure 4.2: Use Case Diagram for TrackMate System
+Figure 4.2: Use Case Diagram for Where Is My Bus System
 
 ```mermaid
 flowchart TB
@@ -114,7 +114,7 @@ flowchart TB
 
 ## 4.4 Entity Relationship Diagram (ER Diagram)
 
-Figure 4.3: Entity Relationship Diagram for TrackMate
+Figure 4.3: Entity Relationship Diagram for Where Is My Bus
 
 ```mermaid
 erDiagram
@@ -201,7 +201,7 @@ erDiagram
 
 ## 4.5 Data Flow Diagram (DFD)
 
-Figure 4.4: Data Flow Diagram for TrackMate System
+Figure 4.4: Data Flow Diagram for Where Is My Bus System
 
 ```mermaid
 flowchart LR
@@ -295,7 +295,7 @@ sequenceDiagram
 
 ## 4.7 Database Schema Design
 
-Figure 4.6: Database Schema for TrackMate
+Figure 4.6: Database Schema for Where Is My Bus
 
 ```mermaid
 classDiagram

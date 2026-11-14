@@ -19,12 +19,12 @@ const seed = async () => {
     username: 'ad1',
     password: hashedPassword,
     role: 'admin',
-    name: 'WhereIsMyBus Admin',
+    name: 'Where Is My Bus Admin',
     email: 'sai254026@gmail.com',
-    firstLogin: true
+    firstLogin: false
   });
 
-  console.log('✅ Admin account seeded (ad1 / ad1). Change the password after first login.');
+  console.log('✅ Admin account seeded (ad1 / ad1).');
 };
 
 seed()

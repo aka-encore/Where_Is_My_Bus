@@ -280,7 +280,7 @@ const DriverSimulator = () => {
         </div>
         <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
           <h3 className="mb-2 text-lg font-semibold text-slate-100">Server Events</h3>
-          <pre className="h-64 overflow-y-auto rounded bg-slate-900 p-3 text-xs text-cyan-200">
+          <pre className="h-64 overflow-y-auto rounded bg-slate-900 p-3 text-xs text-[#E8D2B5]">
             {serverEvents.length ? serverEvents.join('\n') : 'Listening for trip:location_update / stop events...'}
           </pre>
         </div>

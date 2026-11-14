@@ -4,8 +4,8 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   useEffect(() => {
-    // Always light theme
-    localStorage.setItem('trackmate-theme', 'light');
+    // Always light luxury glassmorphism theme
+    localStorage.setItem('whereismybus-theme', 'light');
     document.documentElement.setAttribute('data-theme', 'light');
     document.documentElement.classList.remove('dark');
     document.documentElement.classList.add('light');

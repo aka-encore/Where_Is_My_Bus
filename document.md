@@ -1,4 +1,4 @@
-# TrackMate - Full Project Report Content
+# Where Is My Bus - Full Project Report Content
 
 ## Table of Contents
 
@@ -55,17 +55,17 @@
 
 ## Abstract
 
-TrackMate is a real-time school bus tracking and transport management platform developed for Zeal College of Enginerring and Reaserch.Narhe Pune .The project addresses the practical problem of transport uncertainty faced by students, administrators, and drivers in campus bus operations. Traditional transport systems usually depend on fixed timetables, manual coordination, phone calls, and informal communication, which often fail when buses are delayed, routes change, or students miss their assigned bus. TrackMate solves this problem through a browser-based system that combines live location updates, route-aware ETA estimation, event-based notifications, role-based dashboards, and public tracking access.
+Where Is My Bus is a real-time school bus tracking and transport management platform developed for Zeal College of Enginerring and Reaserch.Narhe Pune .The project addresses the practical problem of transport uncertainty faced by students, administrators, and drivers in campus bus operations. Traditional transport systems usually depend on fixed timetables, manual coordination, phone calls, and informal communication, which often fail when buses are delayed, routes change, or students miss their assigned bus. Where Is My Bus solves this problem through a browser-based system that combines live location updates, route-aware ETA estimation, event-based notifications, role-based dashboards, and public tracking access.
 
 The system is implemented as a full-stack web application. The frontend is built using React and Vite, while the backend uses Node.js, Express, Socket.IO, and MongoDB. The application supports three main roles: admin, driver, and student. Administrators can manage buses, drivers, routes, stops, and student assignments while observing live fleet status and analytics. Drivers can start and end trips, share location updates, and trigger emergency alerts. Students can track their assigned bus, view estimated arrival times, manage alert preferences, and access an alternative-bus redirect workflow if they miss their original bus.
 
-TrackMate also includes public tracking pages for active buses, push notification support through VAPID-based web push, email workflows for onboarding and password recovery, and a Progressive Web App style frontend. The project demonstrates how a relatively lightweight web architecture can deliver practical transport visibility and coordination for a campus environment. It also serves as a strong base for future work in transport analytics, operational reporting, and predictive planning.
+Where Is My Bus also includes public tracking pages for active buses, push notification support through VAPID-based web push, email workflows for onboarding and password recovery, and a Progressive Web App style frontend. The project demonstrates how a relatively lightweight web architecture can deliver practical transport visibility and coordination for a campus environment. It also serves as a strong base for future work in transport analytics, operational reporting, and predictive planning.
 
 ---
 
 ## Introduction
 
-This document presents the complete report content for the TrackMate project. It is structured in a chapter-oriented academic format so that it can be adapted for submission, print formatting, or conversion into a final institutional report.
+This document presents the complete report content for the Where Is My Bus project. It is structured in a chapter-oriented academic format so that it can be adapted for submission, print formatting, or conversion into a final institutional report.
 
 ---
 
@@ -77,11 +77,11 @@ Transportation plays a critical role in the functioning of an educational instit
 
 The growth of mobile internet, web mapping, real-time communication systems, and cloud databases makes it possible to modernize this process without requiring expensive specialized hardware platforms. A browser-based transport solution can provide a live operational view of the bus system for all stakeholders. Such a system can reduce uncertainty, improve communication, and increase trust in the transport process.
 
-TrackMate was created to address these needs. It is a real-time school bus tracking platform tailored to the requirements of Ramachandra College of Engineering, Eluru. The project combines location tracking, route management, ETA estimation, event logging, notifications, and role-specific dashboards into one integrated application.
+Where Is My Bus was created to address these needs. It is a real-time school bus tracking platform tailored to the requirements of Ramachandra College of Engineering, Eluru. The project combines location tracking, route management, ETA estimation, event logging, notifications, and role-specific dashboards into one integrated application.
 
 ### 1.2 Overview of the Project
 
-TrackMate is a full-stack web application for real-time school or college bus tracking. It consists of two main parts:
+Where Is My Bus is a full-stack web application for real-time school or college bus tracking. It consists of two main parts:
 
 - A React-based frontend for administrators, drivers, students, and public viewers.
 - A Node.js and Express backend with MongoDB and Socket.IO support for data storage and live event broadcasting.
@@ -104,7 +104,7 @@ The backend processes driver location updates, persists trip history, computes E
 
 ### 1.3 Objectives
 
-The major objectives of TrackMate are:
+The major objectives of Where Is My Bus are:
 
 1. To provide real-time tracking of buses for administrators and students.
 2. To reduce the uncertainty caused by fixed and outdated bus schedules.
@@ -119,7 +119,7 @@ The major objectives of TrackMate are:
 
 ### 1.4 Scope of the Project
 
-The scope of TrackMate includes transport operations inside an institutional bus environment, especially for fixed-route campus transport. The project focuses on the following scope boundaries:
+The scope of Where Is My Bus includes transport operations inside an institutional bus environment, especially for fixed-route campus transport. The project focuses on the following scope boundaries:
 
 - transport administration for buses, drivers, routes, and stops,
 - live bus trip tracking,
@@ -163,7 +163,7 @@ The key research and implementation gap lies in combining the following into one
 - public bus tracking,
 - notification integration.
 
-TrackMate contributes by integrating these concerns into a practical campus transport platform. It emphasizes system integration, usability, and real operational value rather than focusing on only one isolated feature such as GPS display or route management.
+Where Is My Bus contributes by integrating these concerns into a practical campus transport platform. It emphasizes system integration, usability, and real operational value rather than focusing on only one isolated feature such as GPS display or route management.
 
 ---
 
@@ -189,7 +189,7 @@ As a result, students may miss buses, wait unnecessarily, or rely on informal co
 
 ### 3.2 Proposed System
 
-The proposed system is TrackMate, a live web-based bus tracking and transport management solution. The system replaces static uncertainty with live state visibility. It introduces four major operational layers:
+The proposed system is Where Is My Bus, a live web-based bus tracking and transport management solution. The system replaces static uncertainty with live state visibility. It introduces four major operational layers:
 
 1. Master data management for routes, stops, buses, drivers, students, and assignments.
 2. Real-time trip control and GPS tracking.
@@ -216,13 +216,13 @@ System study evaluates whether the proposed solution is realistic and useful wit
 
 ### 4.1 Feasibility Study
 
-The feasibility study of TrackMate considers operational, economic, and technical aspects.
+The feasibility study of Where Is My Bus considers operational, economic, and technical aspects.
 
 #### 4.1.1 Operational Feasibility
 
 Operational feasibility measures whether the system can be used effectively by the intended users.
 
-TrackMate is operationally feasible because:
+Where Is My Bus is operationally feasible because:
 
 - the system provides separate role-based dashboards for admin, driver, and student users,
 - the user workflows are aligned with everyday transport operations,
@@ -244,7 +244,7 @@ Operational feasibility is further strengthened by the inclusion of:
 
 Economic feasibility evaluates whether the benefits of the system justify the cost of development and operation.
 
-TrackMate is economically feasible because it is built primarily on open-source technologies such as React, Node.js, Express, MongoDB, Socket.IO, and Leaflet. These tools reduce licensing costs significantly. The system can be hosted on affordable cloud services, and the frontend can be deployed on low-cost or free static platforms.
+Where Is My Bus is economically feasible because it is built primarily on open-source technologies such as React, Node.js, Express, MongoDB, Socket.IO, and Leaflet. These tools reduce licensing costs significantly. The system can be hosted on affordable cloud services, and the frontend can be deployed on low-cost or free static platforms.
 
 The key economic advantages include:
 
@@ -260,7 +260,7 @@ Although there are some operational costs associated with hosting, email deliver
 
 Technical feasibility evaluates whether the required solution can be built and maintained using the available technologies, skills, and infrastructure.
 
-TrackMate is technically feasible because the chosen technology stack directly supports the project requirements:
+Where Is My Bus is technically feasible because the chosen technology stack directly supports the project requirements:
 
 - React enables modular, role-based frontend interfaces.
 - Express and Node.js allow fast development of REST APIs.
@@ -275,7 +275,7 @@ Technical feasibility is also strong because the project does not depend on high
 
 ### 4.2 System Requirements
 
-The TrackMate platform requires both hardware and software support for development, testing, and deployment.
+The Where Is My Bus platform requires both hardware and software support for development, testing, and deployment.
 
 #### 4.2.1 Hardware Requirements
 
@@ -312,7 +312,7 @@ Current application software stack:
 
 ### 5.1 System Architecture
 
-TrackMate follows a client-server architecture with live communication support.
+Where Is My Bus follows a client-server architecture with live communication support.
 
 The architecture consists of the following layers:
 
@@ -373,7 +373,7 @@ This section describes the conceptual design views of the system. A separate fil
 
 #### 5.2.1 Use case Diagram
 
-The use case view identifies the main actors of the TrackMate system and the operations available to each one. The most important actors are the admin, driver, student, and public visitor. External services such as OSRM, email, and push infrastructure support the system but are not primary human actors.
+The use case view identifies the main actors of the Where Is My Bus system and the operations available to each one. The most important actors are the admin, driver, student, and public visitor. External services such as OSRM, email, and push infrastructure support the system but are not primary human actors.
 
 The use case relationships show that the admin is responsible for transport master-data management, the driver is responsible for live trip execution, the student is responsible for live bus monitoring and preference actions, and the public visitor has view-only access to selected bus activity.
 
@@ -488,7 +488,7 @@ classDiagram
 
 #### 5.2.3 Sequence Diagram
 
-The sequence diagram below captures the most important runtime scenario in TrackMate: a driver starts a trip and sends live location updates that become visible to students and administrators. This sequence is central to the business value of the system because it ties together trip creation, data persistence, ETA logic, event generation, and dashboard updates.
+The sequence diagram below captures the most important runtime scenario in Where Is My Bus: a driver starts a trip and sends live location updates that become visible to students and administrators. This sequence is central to the business value of the system because it ties together trip creation, data persistence, ETA logic, event generation, and dashboard updates.
 
 This simplified sequence form is more suitable for document export than a highly styled presentation diagram.
 
@@ -556,7 +556,7 @@ In this collaboration view, the `locationController` is the central coordination
 
 #### 5.2.5 Data Flow Diagram
 
-The data flow diagram represents how information moves between users, processes, data stores, and external services. In TrackMate, the most important flows are authentication, master-data maintenance, live trip processing, student tracking, notification handling, and reporting.
+The data flow diagram represents how information moves between users, processes, data stores, and external services. In Where Is My Bus, the most important flows are authentication, master-data maintenance, live trip processing, student tracking, notification handling, and reporting.
 
 The following DFD is reduced to major processes and stores so it stays readable in a printed report.
 
@@ -613,7 +613,7 @@ Methodology defines how data is organized, collected, processed, and prepared fo
 
 ### 6.1 Data Dictionary
 
-The data dictionary describes the core data elements used in TrackMate.
+The data dictionary describes the core data elements used in Where Is My Bus.
 
 #### User
 
@@ -678,7 +678,7 @@ The data dictionary describes the core data elements used in TrackMate.
 
 ### 6.2 Data Collection
 
-TrackMate collects data from multiple sources:
+Where Is My Bus collects data from multiple sources:
 
 1. Admin-entered master data such as buses, routes, stops, drivers, and student records.
 2. CSV uploads for bulk student creation.
@@ -691,7 +691,7 @@ The collected data is both manually curated and automatically generated. This co
 
 ### 6.3 Processing Techniques
 
-The main processing techniques used by TrackMate include:
+The main processing techniques used by Where Is My Bus include:
 
 - REST API processing for standard CRUD and profile workflows,
 - WebSocket processing for live location and event updates,
@@ -705,7 +705,7 @@ These techniques are chosen to balance live responsiveness and implementation si
 
 ### 6.4 Prepared Data
 
-Prepared data in TrackMate includes structured and normalized transport information that is ready for live use.
+Prepared data in Where Is My Bus includes structured and normalized transport information that is ready for live use.
 
 Examples include:
 
@@ -724,7 +724,7 @@ Prepared data improves runtime efficiency because the system does not need to de
 
 System implementation is the stage where the design is translated into a working software solution.
 
-TrackMate is implemented as a monorepo-style project with separate frontend and backend folders. The frontend contains pages, hooks, context providers, and map components. The backend contains route modules, controllers, models, middleware, utilities, and seed scripts.
+Where Is My Bus is implemented as a monorepo-style project with separate frontend and backend folders. The frontend contains pages, hooks, context providers, and map components. The backend contains route modules, controllers, models, middleware, utilities, and seed scripts.
 
 The backend entry point is `backend/server.js`, which connects the database, configures middleware, mounts routes, creates the Socket.IO server, and registers the live tracking handlers. The frontend entry point is `frontend/src/main.jsx`, which configures routing and wraps the app with authentication and theme providers.
 
@@ -763,7 +763,7 @@ Notification handling is integrated into the live processing flow. When a studen
 
 ## 8. Software Description
 
-TrackMate uses modern web development tools and follows a layered modular structure.
+Where Is My Bus uses modern web development tools and follows a layered modular structure.
 
 ### Frontend Description
 
@@ -798,7 +798,7 @@ System testing verifies whether the implemented project satisfies functional and
 
 ### 9.1 Testing Methodology
 
-The testing methodology for TrackMate should focus on the most important operational paths:
+The testing methodology for Where Is My Bus should focus on the most important operational paths:
 
 - authentication,
 - route and stop management,
@@ -924,7 +924,7 @@ The codebase is organized so that feature areas can be changed independently. Fo
 
 ## 11. Results
 
-TrackMate successfully demonstrates the feasibility and usefulness of a web-based campus bus tracking system. The current implementation provides a usable combination of live tracking, management tools, public access, and communication support.
+Where Is My Bus successfully demonstrates the feasibility and usefulness of a web-based campus bus tracking system. The current implementation provides a usable combination of live tracking, management tools, public access, and communication support.
 
 Observed project results include:
 
@@ -967,7 +967,7 @@ Available files in `Screenshots/` include:
 
 #### Conclusion
 
-TrackMate successfully integrates live bus tracking, transport data management, ETA processing, and role-based interaction in a single web application. It solves the core problem of transport uncertainty and improves the information flow between administrators, drivers, and students. The project is operationally meaningful, technically feasible, and suitable as both an academic project and a foundation for further institutional deployment.
+Where Is My Bus successfully integrates live bus tracking, transport data management, ETA processing, and role-based interaction in a single web application. It solves the core problem of transport uncertainty and improves the information flow between administrators, drivers, and students. The project is operationally meaningful, technically feasible, and suitable as both an academic project and a foundation for further institutional deployment.
 
 #### Limitations
 
@@ -981,7 +981,7 @@ Current limitations of the project include:
 
 ### 11.3 Future Scope
 
-Future enhancements that can improve TrackMate include:
+Future enhancements that can improve Where Is My Bus include:
 
 1. full automated testing coverage,
 2. consolidated API route structure,

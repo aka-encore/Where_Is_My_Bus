@@ -111,8 +111,12 @@ const StudentDashboard = () => {
     } catch { return []; }
   });
   const [statusMessage, setStatusMessage] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const hasLoadedRef = useRef(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [syncError, setSyncError] = useState(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
     localStorage.getItem(NOTIFICATION_PREF_KEY) === 'true'
   );
@@ -257,7 +261,7 @@ const StudentDashboard = () => {
         );
       }
     }
-    fetchProfile();
+    fetchProfile(false);
   }, [stopInfo]);
 
   // Use a ref so socket handlers can call fetchProfile without a dependency-order issue
@@ -271,26 +275,31 @@ const StudentDashboard = () => {
     'trip:sos': setSosAlert,
     'stats:live_visitors': setVisitorCount,
     'bus:trip_started': () => {
-      // Instantly refresh when a driver starts a trip
-      fetchProfileRef.current?.();
+      // Instantly refresh in background when a driver starts a trip
+      fetchProfileRef.current?.(false);
     },
     'bus:trip_ended': () => {
-      // Instantly refresh when a trip ends
-      // If redirect is active and the redirected trip ended, clear it
+      // Instantly refresh in background when a trip ends
       if (redirectInfoRef.current) {
         setRedirectInfo(null);
         toast('Redirected trip has ended', { icon: 'ℹ️' });
       }
-      fetchProfileRef.current?.();
+      fetchProfileRef.current?.(false);
     },
   }), [handleLocationUpdate, handleEtaUpdate, handleStopEvent]);
 
   const { socket, isConnected } = useSocket(socketHandlers);
   const isAuthenticated = !!localStorage.getItem(TOKEN_KEY);
 
-  // Fetch profile
-  const fetchProfile = useCallback(async () => {
-    setLoading(true);
+  // Fetch profile — background refresh by default
+  const fetchProfile = useCallback(async (isInitial = false) => {
+    if (!hasLoadedRef.current || isInitial) {
+      setIsInitialLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
+    setSyncError(null);
+
     try {
       const response = await api.get('/students/me').catch(() => api.get('/auth/me'));
       const data = response.data;
@@ -352,10 +361,20 @@ const StudentDashboard = () => {
           setEta({ value: etaRes.data.etaMinutes * 60 * 1000, source: 'server', updatedAt: Date.now() });
         }
       }
+
+      hasLoadedRef.current = true;
+      setHasLoaded(true);
+      setError(null);
     } catch (err) {
-      setError('Failed to load dashboard');
+      console.error('Student dashboard fetch error:', err);
+      if (!hasLoadedRef.current) {
+        setError('Failed to load dashboard');
+      } else {
+        setSyncError('Sync paused — showing cached data');
+      }
     } finally {
-      setLoading(false);
+      setIsInitialLoading(false);
+      setIsRefreshing(false);
       setLastRefreshed(Date.now());
     }
   }, [user]);
@@ -386,7 +405,7 @@ const StudentDashboard = () => {
       await api.post('/students/cancel-redirect');
       setRedirectInfo(null);
       toast('Back to your original bus', { icon: '🚌' });
-      fetchProfile(); // This restores original bus position on map
+      fetchProfile(false); // This restores original bus position on map
     } catch {
       toast.error('Failed to cancel redirect');
     }
@@ -415,7 +434,7 @@ const StudentDashboard = () => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
-    fetchProfile();
+    fetchProfile(true);
   }, [fetchProfile]);
 
   // Subscribe to trip socket (use redirected trip if active)
@@ -437,7 +456,7 @@ const StudentDashboard = () => {
     const startPolling = () => {
       if (intervalId) return;
       intervalId = setInterval(() => {
-        fetchProfile();
+        fetchProfile(false);
       }, POLL_INTERVAL_MS);
     };
 
@@ -450,7 +469,7 @@ const StudentDashboard = () => {
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        fetchProfile(); // Refresh immediately when tab becomes visible
+        fetchProfile(false); // Refresh silently when tab becomes visible
         startPolling();
       } else {
         stopPolling(); // Save battery when tab is hidden
@@ -583,20 +602,20 @@ const StudentDashboard = () => {
     ? normalizeLocation(redirectInfo.matchingStop)
     : stopInfo ? normalizeLocation(stopInfo) : null;
 
-  // Loading state
-  if (loading) {
+  // Loading state (initial load only, before any data is loaded)
+  if (isInitialLoading && !hasLoaded) {
     return <TrackMateLoader message="Loading your dashboard..." />;
   }
 
-  // Error state
-  if (error) {
+  // Error state (initial load only, when no data exists)
+  if (error && !hasLoaded) {
     return (
       <main className="sd-page sd-center">
         <div className="sd-card sd-error-card">
-          <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-white font-medium mb-2">Something went wrong</p>
+          <AlertTriangle className="w-12 h-12 text-[#690907] mx-auto mb-4" />
+          <p className="text-[#292522] font-semibold mb-2">Something went wrong</p>
           <p className="sd-muted-text mb-4">{error}</p>
-          <button onClick={fetchProfile} className="sd-btn-primary px-6 py-2.5">
+          <button onClick={() => fetchProfile(true)} className="sd-btn-primary px-6 py-2.5">
             Try Again
           </button>
         </div>
@@ -700,10 +719,21 @@ const StudentDashboard = () => {
               <span className={`sd-live-dot ${isConnected ? 'sd-live-dot-on' : ''}`} />
               {isConnected ? 'Live' : 'Offline'}
             </span>
-            {lastRefreshed && (
-              <span className="sd-refresh-indicator" title="Auto-refreshes every 30s">
-                <RefreshCw className="w-3 h-3" />
-                {new Date(lastRefreshed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            {isRefreshing && (
+              <span className="sd-refresh-indicator flex items-center gap-1.5 text-xs text-[#8C827A]" title="Syncing data in background...">
+                <RefreshCw className="w-3 h-3 animate-spin text-[#690907]" />
+                <span>Syncing</span>
+              </span>
+            )}
+            {syncError && !isRefreshing && (
+              <span className="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md" title={syncError}>
+                ⚠️ Cached data
+              </span>
+            )}
+            {lastRefreshed && !isRefreshing && !syncError && (
+              <span className="sd-refresh-indicator flex items-center gap-1.5" title="Auto-refreshes in background">
+                <RefreshCw className="w-3 h-3 text-[#A5A79B]" />
+                <span>{new Date(lastRefreshed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
               </span>
             )}
           </div>
@@ -783,7 +813,7 @@ const StudentDashboard = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', fontSize: '0.85rem', color: '#94a3b8' }}>
                         <span>👨‍✈️ {redirectInfo.driver.name}</span>
                         {redirectInfo.driver.phone && (
-                          <a href={`tel:${redirectInfo.driver.phone}`} style={{ color: '#818cf8' }}>
+                          <a href={`tel:${redirectInfo.driver.phone}`} style={{ color: '#690907' }}>
                             <Phone className="w-4 h-4" />
                           </a>
                         )}

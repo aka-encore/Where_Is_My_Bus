@@ -14,7 +14,7 @@ const scrubPassword = (userDoc) => {
 };
 
 const listStudents = async (_req, res) => {
-  const students = await User.find({ role: 'student' }).select('-password');
+  const students = await User.find({ role: 'student' }).select('-password').lean();
   res.json(students);
 };
 

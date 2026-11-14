@@ -1,18 +1,170 @@
+/** @type {import('tailwindcss').Config} */
 const config = {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
+        // Primary Brand Identity: Deep Burgundy
         brand: {
-          DEFAULT: '#3B82F6',   /* 500 — primary blue */
-          light:   '#60A5FA',   /* 400 — soft sky blue tint */
-          hover:   '#2563EB',   /* 600 — hover state */
-          active:  '#1D4ED8',   /* 700 — pressed / dark active */
-          subtle:  'rgba(59, 130, 246, 0.10)', /* icon bg, soft pill */
-          bloom:   'rgba(59, 130, 246, 0.20)', /* hovered icon bg */
-          glow:    'rgba(59, 130, 246, 0.35)', /* box-shadow glow */
-        }
+          DEFAULT: '#690907',
+          light:   '#8A1C1A',
+          hover:   '#82110f',
+          active:  '#540705',
+          subtle:  'rgba(105, 9, 7, 0.08)',
+          bloom:   'rgba(105, 9, 7, 0.16)',
+          glow:    'rgba(105, 9, 7, 0.28)',
+        },
+        burgundy: {
+          50:  '#FBF2F2',
+          100: '#F6E2E2',
+          200: '#ECC5C5',
+          300: '#DE9E9E',
+          400: '#CB6F6D',
+          500: '#8C1816',
+          600: '#690907',
+          700: '#540705',
+          800: '#4A0504',
+          900: '#330302',
+          DEFAULT: '#690907',
+        },
+        // Secondary Surface: Muted Sage Grey
+        sage: {
+          50:  '#F7F8F6',
+          100: '#EEF0EC',
+          200: '#D8D9D0',
+          300: '#C3C5BA',
+          400: '#B1B3A6',
+          500: '#A5A79B',
+          600: '#8B8D81',
+          700: '#707267',
+          800: '#55564E',
+          900: '#3B3C36',
+          DEFAULT: '#A5A79B',
+        },
+        // Background & Panels: Warm Cream Beige
+        cream: {
+          50:  '#FDFBF8',
+          100: '#F5F0E8',
+          200: '#EFE5D8',
+          300: '#E8D2B5',
+          400: '#D8BD9B',
+          500: '#C5A580',
+          600: '#A8855F',
+          DEFAULT: '#E8D2B5',
+        },
+        // Supporting Neutrals
+        charcoal: {
+          50:  '#F5F4F3',
+          100: '#E7E5E3',
+          200: '#C7C4C0',
+          300: '#9F9A95',
+          400: '#6E6862',
+          500: '#4B4641',
+          600: '#38332F',
+          700: '#292522',
+          800: '#1F1C1A',
+          900: '#141211',
+          DEFAULT: '#292522',
+        },
+        taupe: {
+          light: '#D5CABE',
+          DEFAULT: '#B8AA99',
+          dark: '#8F806E',
+        },
+        ivory: {
+          DEFAULT: '#F5F0E8',
+        },
+        // STRICT PROHIBITION ENFORCEMENT:
+        // Remap default blue, sky, indigo, purple, violet, cyan to burgundy/sage/cream/charcoal
+        // so no accidental blue or violet shades can ever render.
+        blue: {
+          50:  '#FBF2F2',
+          100: '#F6E2E2',
+          200: '#ECC5C5',
+          300: '#DE9E9E',
+          400: '#CB6F6D',
+          500: '#8C1816',
+          600: '#690907',
+          700: '#540705',
+          800: '#4A0504',
+          900: '#330302',
+          DEFAULT: '#690907',
+        },
+        indigo: {
+          50:  '#FDFBF8',
+          100: '#F5F0E8',
+          200: '#EFE5D8',
+          300: '#E8D2B5',
+          400: '#B8AA99',
+          500: '#A5A79B',
+          600: '#690907',
+          700: '#540705',
+          800: '#4A0504',
+          900: '#292522',
+          DEFAULT: '#690907',
+        },
+        sky: {
+          50:  '#F7F8F6',
+          100: '#EEF0EC',
+          200: '#D8D9D0',
+          300: '#C3C5BA',
+          400: '#B1B3A6',
+          500: '#A5A79B',
+          600: '#8B8D81',
+          700: '#707267',
+          800: '#55564E',
+          900: '#3B3C36',
+          DEFAULT: '#A5A79B',
+        },
+        purple: {
+          50:  '#FBF2F2',
+          100: '#F6E2E2',
+          200: '#ECC5C5',
+          300: '#DE9E9E',
+          400: '#CB6F6D',
+          500: '#8C1816',
+          600: '#690907',
+          700: '#540705',
+          800: '#4A0504',
+          900: '#330302',
+          DEFAULT: '#690907',
+        },
+        violet: {
+          50:  '#FBF2F2',
+          100: '#F6E2E2',
+          200: '#ECC5C5',
+          300: '#DE9E9E',
+          400: '#CB6F6D',
+          500: '#8C1816',
+          600: '#690907',
+          700: '#540705',
+          800: '#4A0504',
+          900: '#330302',
+          DEFAULT: '#690907',
+        },
+        cyan: {
+          50:  '#F7F8F6',
+          100: '#EEF0EC',
+          200: '#D8D9D0',
+          300: '#C3C5BA',
+          400: '#B1B3A6',
+          500: '#A5A79B',
+          600: '#8B8D81',
+          700: '#707267',
+          800: '#55564E',
+          900: '#3B3C36',
+          DEFAULT: '#A5A79B',
+        },
+      },
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(41, 37, 34, 0.08), 0 2px 8px 0 rgba(41, 37, 34, 0.04)',
+        'glass-lg': '0 16px 40px -8px rgba(41, 37, 34, 0.12), 0 4px 16px -2px rgba(41, 37, 34, 0.06)',
+        'burgundy': '0 8px 24px -4px rgba(105, 9, 7, 0.35)',
+        'cream': '0 8px 24px -4px rgba(232, 210, 181, 0.4)',
+      },
+      backdropBlur: {
+        'xs': '2px',
       }
     }
   },
@@ -20,4 +172,3 @@ const config = {
 };
 
 export default config;
-

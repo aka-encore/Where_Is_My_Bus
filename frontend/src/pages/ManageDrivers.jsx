@@ -8,13 +8,15 @@ import {
   User, X, Bus, Shield, Filter, ChevronDown, CheckSquare, Square, MousePointerClick
 } from 'lucide-react';
 import TrackMateLoader from '../components/TrackMateLoader';
+import { apiCache, CACHE_TTL } from '../utils/apiCache';
+import { SkeletonGrid } from '../components/Skeletons';
 
 const blankForm = { username: '', password: '', name: '', phone: '' };
 
 /* Stat Card Component */
-const StatCard = ({ icon: Icon, label, value, subtitle, color = 'blue' }) => {
+const StatCard = ({ icon: Icon, label, value, subtitle, color = 'burgundy' }) => {
   const colors = {
-    blue: 'from-blue-500 to-blue-600',
+    burgundy: 'from-[#690907] to-[#82110f]',
     emerald: 'from-emerald-500 to-emerald-600',
     amber: 'from-amber-500 to-amber-600'
   };
@@ -48,13 +50,13 @@ const DriverCard = ({ driver, buses, onEdit, onDelete, selectionMode, isSelected
     <div
       className={`relative bg-white rounded-2xl border transition-all duration-200 cursor-pointer overflow-hidden ${
         isSelected
-          ? 'border-blue-400 ring-2 ring-blue-200 shadow-lg shadow-blue-100'
-          : 'border-gray-200 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-50 hover:-translate-y-0.5'
+          ? 'border-[#690907]/60 ring-2 ring-[#690907]/20 shadow-lg shadow-[#690907]/10'
+          : 'border-gray-200 hover:border-[#690907]/40 hover:shadow-lg hover:shadow-[#690907]/5 hover:-translate-y-0.5'
       }`}
       onClick={handleCardClick}
     >
       {/* Top accent bar */}
-      <div className={`h-1 w-full ${isAssigned ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-blue-400 to-blue-500'}`} />
+      <div className={`h-1 w-full ${isAssigned ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-[#A5A79B] to-[#707267]'}`} />
 
       <div className="p-5">
         {/* Header: avatar + name + badge */}
@@ -63,7 +65,7 @@ const DriverCard = ({ driver, buses, onEdit, onDelete, selectionMode, isSelected
             {selectionMode && (
               <div className="flex-shrink-0">
                 {isSelected
-                  ? <CheckSquare className="w-5 h-5 text-blue-500" />
+                  ? <CheckSquare className="w-5 h-5 text-[#690907]" />
                   : <Square className="w-5 h-5 text-gray-300" />
                 }
               </div>
@@ -100,8 +102,8 @@ const DriverCard = ({ driver, buses, onEdit, onDelete, selectionMode, isSelected
           </div>
           {isAssigned && (
             <div className="flex items-center gap-2.5 text-sm">
-              <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <Bus className="w-3.5 h-3.5 text-blue-500" />
+              <div className="w-7 h-7 rounded-lg bg-[#690907]/10 flex items-center justify-center flex-shrink-0">
+                <Bus className="w-3.5 h-3.5 text-[#690907]" />
               </div>
               <span className="text-gray-700 font-medium">{assignedBus?.name || 'Bus assigned'}</span>
             </div>
@@ -113,7 +115,7 @@ const DriverCard = ({ driver, buses, onEdit, onDelete, selectionMode, isSelected
           <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-gray-100">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(driver); }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#690907] bg-[#690907]/10 hover:bg-[#690907]/15 transition"
               title="Edit driver"
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -135,9 +137,14 @@ const DriverCard = ({ driver, buses, onEdit, onDelete, selectionMode, isSelected
 };
 
 const ManageDrivers = () => {
-  const [drivers, setDrivers] = useState([]);
-  const [buses, setBuses] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const cachedDrivers = apiCache.peek('/admin/drivers');
+  const cachedBuses = apiCache.peek('/buses');
+
+  const [drivers, setDrivers] = useState(cachedDrivers || []);
+  const [buses, setBuses] = useState(cachedBuses || []);
+  const [hasLoaded, setHasLoaded] = useState(Boolean(cachedDrivers));
+  const [loading, setLoading] = useState(!cachedDrivers);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [busFilter, setBusFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -149,19 +156,22 @@ const ManageDrivers = () => {
   const [selectionMode, setSelectionMode] = useState(false);
   const [bulkConfirm, setBulkConfirm] = useState(false);
 
-  const loadDrivers = async () => {
-    setLoading(true);
+  const loadDrivers = async (isManual = false) => {
+    if (!hasLoaded) setLoading(true);
+    else setIsRefreshing(true);
     try {
-      const [driversRes, busesRes] = await Promise.all([
-        api.get('/admin/drivers'),
-        api.get('/buses')
+      const [driversData, busesData] = await Promise.all([
+        apiCache.fetchWithCache('/admin/drivers', { ttl: CACHE_TTL.STANDARD, forceFresh: isManual }),
+        apiCache.fetchWithCache('/buses', { ttl: CACHE_TTL.STANDARD, forceFresh: isManual })
       ]);
-      setDrivers(driversRes.data);
-      setBuses(busesRes.data || []);
+      setDrivers(driversData || []);
+      setBuses(busesData || []);
+      setHasLoaded(true);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load drivers');
+      toast.error('Unable to load drivers');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -194,7 +204,7 @@ const ManageDrivers = () => {
 
     try {
       if (editingDriver) {
-        await api.put(`/ admin / drivers / ${editingDriver._id} `, payload);
+        await api.put(`/admin/drivers/${editingDriver._id}`, payload);
         toast.success('Driver updated');
       } else {
         await api.post('/admin/drivers', payload);
@@ -203,7 +213,9 @@ const ManageDrivers = () => {
       setDrawerOpen(false);
       setForm(blankForm);
       setEditingDriver(null);
-      loadDrivers();
+      apiCache.invalidate('/admin/drivers');
+      apiCache.invalidate('/admin/dashboard');
+      loadDrivers(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to save driver');
     }
@@ -216,8 +228,10 @@ const ManageDrivers = () => {
     try {
       await api.delete(`/admin/drivers/${confirmState.target._id}`);
       toast.success('Driver removed');
+      apiCache.invalidate('/admin/drivers');
+      apiCache.invalidate('/admin/dashboard');
       setConfirmState({ open: false, target: null });
-      loadDrivers();
+      loadDrivers(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to delete driver');
     }
@@ -305,7 +319,7 @@ const ManageDrivers = () => {
             <button
               onClick={() => { if (selectionMode) exitSelection(); else setSelectionMode(true); }}
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-medium transition sm:w-auto ${selectionMode
-                ? 'border-blue-500 text-blue-500 bg-blue-50'
+                ? 'border-[#690907] text-[#690907] bg-[#690907]/10'
                 : 'border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
                 }`}
             >
@@ -315,7 +329,7 @@ const ManageDrivers = () => {
             {!selectionMode && (
               <button
                 onClick={openCreate}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition sm:w-auto flex-1"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition sm:w-auto flex-1"
               >
                 <Plus className="w-5 h-5" />
                 Add Driver
@@ -326,7 +340,7 @@ const ManageDrivers = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <StatCard icon={UserCheck} label="Total Drivers" value={drivers.length} subtitle="Registered" color="blue" />
+          <StatCard icon={UserCheck} label="Total Drivers" value={drivers.length} subtitle="Registered" color="burgundy" />
           <StatCard icon={Bus} label="Assigned" value={assignedDrivers} subtitle="To buses" color="emerald" />
           <StatCard icon={Shield} label="Available" value={drivers.length - assignedDrivers} subtitle="Unassigned" color="amber" />
         </div>
@@ -343,7 +357,7 @@ const ManageDrivers = () => {
                 placeholder="Search by name, username, phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500/50"
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#690907]/50"
               />
               {search && (
                 <button
@@ -361,7 +375,7 @@ const ManageDrivers = () => {
               <select
                 value={busFilter}
                 onChange={(e) => setBusFilter(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:border-[#690907]/50 appearance-none cursor-pointer"
               >
                 <option value="">All Buses</option>
                 {buses.map((bus) => (
@@ -379,7 +393,7 @@ const ManageDrivers = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:outline-none focus:border-[#690907]/50 appearance-none cursor-pointer"
               >
                 <option value="">All Status</option>
                 <option value="assigned">Assigned</option>
@@ -402,21 +416,21 @@ const ManageDrivers = () => {
                 </button>
               )}
               {search && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#690907] text-xs">
                   Search: "{search.length > 15 ? search.slice(0, 15) + '…' : search}"
-                  <button onClick={() => setSearch('')} className="ml-0.5 hover:text-blue-800"><X className="w-3 h-3" /></button>
+                  <button onClick={() => setSearch('')} className="ml-0.5 hover:text-[#690907]"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {busFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#690907] text-xs">
                   Bus: {buses.find(b => b._id === busFilter)?.name || 'Unknown'}
-                  <button onClick={() => setBusFilter('')} className="ml-0.5 hover:text-blue-800"><X className="w-3 h-3" /></button>
+                  <button onClick={() => setBusFilter('')} className="ml-0.5 hover:text-[#690907]"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {statusFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#690907] text-xs">
                   {statusFilter === 'assigned' ? '✓ Assigned' : '⭐ Available'}
-                  <button onClick={() => setStatusFilter('')} className="ml-0.5 hover:text-blue-800"><X className="w-3 h-3" /></button>
+                  <button onClick={() => setStatusFilter('')} className="ml-0.5 hover:text-[#690907]"><X className="w-3 h-3" /></button>
                 </span>
               )}
             </div>
@@ -427,8 +441,8 @@ const ManageDrivers = () => {
         </div>
 
         {/* Drivers Grid */}
-        {loading ? (
-          <TrackMateLoader compact message="Loading drivers..." />
+        {loading && !hasLoaded ? (
+          <SkeletonGrid count={6} />
         ) : filteredDrivers.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredDrivers.map((driver) => (
@@ -473,7 +487,7 @@ const ManageDrivers = () => {
             <button
               type="submit"
               form="driver-form"
-              className="flex-1 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition"
             >
               {editingDriver ? 'Save Changes' : 'Add Driver'}
             </button>
@@ -487,7 +501,7 @@ const ManageDrivers = () => {
               name="username"
               value={form.username}
               onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., driver1"
               required
             />
@@ -499,7 +513,7 @@ const ManageDrivers = () => {
               type="text"
               value={form.password}
               onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#690907]/50"
               placeholder={editingDriver ? 'Leave blank to keep current' : 'Required'}
               required={!editingDriver}
             />
@@ -510,7 +524,7 @@ const ManageDrivers = () => {
               name="name"
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., John Smith"
             />
           </div>
@@ -521,7 +535,7 @@ const ManageDrivers = () => {
               type="tel"
               value={form.phone}
               onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., +1 234 567 8900"
             />
           </div>
@@ -547,7 +561,7 @@ const ManageDrivers = () => {
           <div className="w-px h-6 bg-gray-200" />
           <button
             onClick={selectAll}
-            className="text-xs text-blue-500 hover:text-blue-600 font-medium whitespace-nowrap"
+            className="text-xs text-[#690907] hover:text-[#690907] font-medium whitespace-nowrap"
           >
             Select all ({filteredDrivers.length})
           </button>

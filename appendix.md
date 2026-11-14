@@ -1,4 +1,4 @@
-# TrackMate - Appendix
+# Where Is My Bus - Appendix
 
 This appendix file contains only Mermaid diagrams and testing tables for easy copy-paste into the final project report.
 

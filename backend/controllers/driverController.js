@@ -47,7 +47,7 @@ const createDriverAccount = async (req, res) => {
 };
 
 const getDrivers = async (_req, res) => {
-  const drivers = await User.find({ role: 'driver' }).select('-password');
+  const drivers = await User.find({ role: 'driver' }).select('-password').lean();
   res.json(drivers);
 };
 

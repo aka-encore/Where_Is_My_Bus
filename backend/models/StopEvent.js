@@ -51,4 +51,7 @@ const stopEventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance index for event logs and sorting
+stopEventSchema.index({ timestamp: -1 });
+
 module.exports = mongoose.model('StopEvent', stopEventSchema);

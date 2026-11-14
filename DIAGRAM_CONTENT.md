@@ -1,4 +1,4 @@
-# TrackMate - Diagram Content
+# Where Is My Bus - Diagram Content
 
 This file contains diagram-ready content for section 5.2 of the project documentation.
 
@@ -6,7 +6,7 @@ This file contains diagram-ready content for section 5.2 of the project document
 
 ### System Boundary
 
-System name: `TrackMate School Bus Tracking System`
+System name: `Where Is My Bus School Bus Tracking System`
 
 ### Actors
 
@@ -85,7 +85,7 @@ System name: `TrackMate School Bus Tracking System`
 
 ### Diagram Notes
 
-- Draw TrackMate as one system boundary.
+- Draw Where Is My Bus as one system boundary.
 - Place Admin, Driver, Student, and Public Visitor on the left and right sides.
 - Place Notification Service, Email Service, and OSRM Routing Service outside the system boundary as external actors.
 
@@ -437,7 +437,7 @@ External entities:
 
 Central process:
 
-- TrackMate Bus Tracking System
+- Where Is My Bus Bus Tracking System
 
 Major data flows:
 

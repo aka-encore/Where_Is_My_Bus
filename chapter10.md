@@ -2,7 +2,7 @@
 
 # CODING
 
-This chapter includes the most important code modules from the TrackMate project. Only selected snippets are included so that the final documentation highlights the core implementation logic without pasting full files.
+This chapter includes the most important code modules from the Where Is My Bus project. Only selected snippets are included so that the final documentation highlights the core implementation logic without pasting full files.
 
 ---
 
@@ -309,4 +309,4 @@ Why this code is important:
 
 ---
 
-These six code modules represent the core implementation of TrackMate and are the most suitable selections for inclusion in the final documentation chapter on coding.
+These six code modules represent the core implementation of Where Is My Bus and are the most suitable selections for inclusion in the final documentation chapter on coding.

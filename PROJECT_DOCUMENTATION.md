@@ -1,8 +1,8 @@
-# TrackMate - Project Documentation
+# Where Is My Bus - Project Documentation
 
 ## 1. Project Overview
 
-TrackMate is a real-time school bus tracking platform designed for Zeal College of Enginerring and Reaserch.Narhe Pune. The system helps administrators manage transport operations, drivers run live trips, and students track assigned buses from a browser-based interface.
+Where Is My Bus is a real-time school bus tracking platform designed for Zeal College of Enginerring and Reaserch.Narhe Pune. The system helps administrators manage transport operations, drivers run live trips, and students track assigned buses from a browser-based interface.
 
 The current implementation is split into two applications:
 
@@ -28,7 +28,7 @@ Campus transportation systems typically rely on static schedules and manual coor
 3. Drivers have no integrated way to broadcast emergency status.
 4. Missed buses create avoidable delays because there is no redirect workflow.
 
-TrackMate addresses those issues using a web-based, role-aware tracking system rather than a paper schedule or a manual calling process.
+Where Is My Bus addresses those issues using a web-based, role-aware tracking system rather than a paper schedule or a manual calling process.
 
 ## 3. Objectives
 
@@ -93,7 +93,7 @@ TrackMate addresses those issues using a web-based, role-aware tracking system r
 
 ### 5.1 Architecture Summary
 
-TrackMate follows a client-server architecture.
+Where Is My Bus follows a client-server architecture.
 
 - The React frontend handles dashboards, forms, maps, and route navigation.
 - The Express backend exposes REST APIs and a Socket.IO server.
@@ -121,7 +121,7 @@ Diagram-ready content is maintained in `DIAGRAM_CONTENT.md`.
 ## 6. Repository Structure
 
 ```text
-TrackMate/
+Where Is My Bus/
   backend/
     config/
     controllers/
@@ -718,4 +718,4 @@ Important frontend environment variables:
 
 ## 17. Conclusion
 
-TrackMate is currently a functional full-stack transport management and tracking platform with live trip flow, operational dashboards, ETA logic, and public bus visibility. The architecture is already strong enough for continued refinement, but the main next engineering step is consolidation of older and newer route patterns so the API surface becomes simpler to maintain.
+Where Is My Bus is currently a functional full-stack transport management and tracking platform with live trip flow, operational dashboards, ETA logic, and public bus visibility. The architecture is already strong enough for continued refinement, but the main next engineering step is consolidation of older and newer route patterns so the API surface becomes simpler to maintain.

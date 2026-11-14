@@ -88,7 +88,7 @@ const createRoute = async (req, res) => {
 };
 
 const getRoutes = async (_req, res) => {
-  const routes = await Route.find().sort({ createdAt: -1 });
+  const routes = await Route.find().sort({ createdAt: -1 }).lean();
   res.json(routes);
 };
 
@@ -175,7 +175,7 @@ const searchPlaces = async (req, res) => {
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=6&addressdetails=1`;
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'TrackMate-BusTracking/1.0 (route-stop-search)'
+          'User-Agent': 'WhereIsMyBus-BusTracking/1.0 (route-stop-search)'
         }
       });
       if (response.ok) {

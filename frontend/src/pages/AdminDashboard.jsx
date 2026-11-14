@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { API_BASE_URL } from '../constants/api';
@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import AdminMap from '../components/AdminMap';
 import TrackMateLoader from '../components/TrackMateLoader';
+import { apiCache, CACHE_TTL } from '../utils/apiCache';
+import { DashboardSkeleton } from '../components/Skeletons';
 
 // ===== HELPER FUNCTIONS =====
 
@@ -26,7 +28,7 @@ const StatCard = ({
   icon: Icon,
   label,
   value,
-  color = 'blue',
+  color = 'burgundy',
   to,
   onClick,
   actionText = 'View details',
@@ -35,51 +37,51 @@ const StatCard = ({
   const navigate = useNavigate();
 
   const colorStyles = {
-    blue: {
-      bg: 'bg-blue-50',
-      icon: 'text-blue-600',
-      borderHover: 'hover:border-blue-400',
-      shadowHover: 'hover:shadow-blue-500/10',
-      accentText: 'text-blue-600'
+    burgundy: {
+      bg: 'bg-[#690907]/10',
+      icon: 'text-[#690907]',
+      borderHover: 'hover:border-[#690907]/50',
+      shadowHover: 'hover:shadow-[#690907]/15',
+      accentText: 'text-[#690907]'
     },
     emerald: {
       bg: 'bg-emerald-50',
-      icon: 'text-emerald-600',
-      borderHover: 'hover:border-emerald-400',
-      shadowHover: 'hover:shadow-emerald-500/10',
-      accentText: 'text-emerald-600'
+      icon: 'text-emerald-700',
+      borderHover: 'hover:border-emerald-300',
+      shadowHover: 'hover:shadow-emerald-600/10',
+      accentText: 'text-emerald-700'
     },
     amber: {
       bg: 'bg-amber-50',
-      icon: 'text-amber-600',
-      borderHover: 'hover:border-amber-400',
-      shadowHover: 'hover:shadow-amber-500/10',
-      accentText: 'text-amber-600'
+      icon: 'text-amber-700',
+      borderHover: 'hover:border-amber-300',
+      shadowHover: 'hover:shadow-amber-600/10',
+      accentText: 'text-amber-700'
     },
-    purple: {
-      bg: 'bg-purple-50',
-      icon: 'text-purple-600',
-      borderHover: 'hover:border-purple-400',
-      shadowHover: 'hover:shadow-purple-500/10',
-      accentText: 'text-purple-600'
+    sage: {
+      bg: 'bg-[#A5A79B]/20',
+      icon: 'text-[#55564E]',
+      borderHover: 'hover:border-[#A5A79B]',
+      shadowHover: 'hover:shadow-[#A5A79B]/20',
+      accentText: 'text-[#55564E]'
     },
-    indigo: {
-      bg: 'bg-indigo-50',
-      icon: 'text-indigo-600',
-      borderHover: 'hover:border-indigo-400',
-      shadowHover: 'hover:shadow-indigo-500/10',
-      accentText: 'text-indigo-600'
+    cream: {
+      bg: 'bg-[#E8D2B5]/40',
+      icon: 'text-[#8A6743]',
+      borderHover: 'hover:border-[#E8D2B5]',
+      shadowHover: 'hover:shadow-[#E8D2B5]/30',
+      accentText: 'text-[#8A6743]'
     },
-    sky: {
-      bg: 'bg-sky-50',
-      icon: 'text-sky-600',
-      borderHover: 'hover:border-sky-400',
-      shadowHover: 'hover:shadow-sky-500/10',
-      accentText: 'text-sky-600'
+    charcoal: {
+      bg: 'bg-[#292522]/10',
+      icon: 'text-[#292522]',
+      borderHover: 'hover:border-[#292522]/40',
+      shadowHover: 'hover:shadow-[#292522]/15',
+      accentText: 'text-[#292522]'
     }
   };
 
-  const style = colorStyles[color] || colorStyles.blue;
+  const style = colorStyles[color] || colorStyles.burgundy;
   const isClickable = Boolean(to || onClick);
 
   const handleClick = (e) => {
@@ -101,7 +103,7 @@ const StatCard = ({
           handleClick(e);
         }
       }}
-      className={`group relative bg-white border border-slate-200 rounded-2xl p-5 shadow-sm transition-all duration-200 ${
+      className={`group relative bg-white/85 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-5 shadow-sm transition-all duration-200 ${
         isClickable
           ? `cursor-pointer hover:-translate-y-1 hover:shadow-lg ${style.borderHover} ${style.shadowHover}`
           : ''
@@ -112,9 +114,9 @@ const StatCard = ({
           <Icon className="w-6 h-6" />
         </div>
         {isClickable && (
-          <div className="flex items-center gap-1.5 text-slate-400 group-hover:text-blue-600 transition-colors">
+          <div className="flex items-center gap-1.5 text-[#8C827A] group-hover:text-[#690907] transition-colors">
             {badge && (
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600">
+              <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-[#690907]/10 text-[#690907]">
                 {badge}
               </span>
             )}
@@ -124,16 +126,16 @@ const StatCard = ({
       </div>
 
       <div className="space-y-1 my-1">
-        <p className="text-3xl font-extrabold text-slate-900 tracking-tight select-none">
+        <p className="text-3xl font-extrabold text-[#292522] tracking-tight select-none">
           {value !== undefined && value !== null ? value : '—'}
         </p>
-        <p className="text-sm font-semibold text-slate-600">
+        <p className="text-sm font-semibold text-[#5A534C]">
           {label}
         </p>
       </div>
 
       {isClickable && (
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-blue-600 transition-colors">
+        <div className="mt-4 pt-3 border-t border-[#A5A79B]/20 flex items-center justify-between text-xs font-semibold text-[#8C827A] group-hover:text-[#690907] transition-colors">
           <span>{actionText}</span>
           <ChevronRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
         </div>
@@ -143,17 +145,17 @@ const StatCard = ({
 };
 
 const TripCard = ({ trip }) => (
-  <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100/70 transition">
+  <div className="p-4 bg-[#F5F0E8]/70 border border-[#A5A79B]/25 rounded-xl hover:bg-white/80 transition">
     <div className="flex items-center gap-4">
       <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-        <Bus className="w-6 h-6 text-emerald-600" />
+        <Bus className="w-6 h-6 text-emerald-700" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-slate-900 truncate">{trip.bus?.name || 'Unknown Bus'}</p>
-        <p className="text-sm text-slate-600">
+        <p className="font-semibold text-[#292522] truncate">{trip.bus?.name || 'Unknown Bus'}</p>
+        <p className="text-sm text-[#5A534C]">
           Driver: {trip.driver?.name || trip.driver?.username || 'Unknown'}
         </p>
-        <p className="text-xs text-slate-400 mt-1">{trip.route?.name || 'No route'}</p>
+        <p className="text-xs text-[#8C827A] mt-1">{trip.route?.name || 'No route'}</p>
       </div>
       <div className="flex items-center gap-2">
         <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
@@ -166,50 +168,88 @@ const TripCard = ({ trip }) => (
 );
 
 const EventItem = ({ event }) => (
-  <div className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition">
-    <div className={`p-2 rounded-lg ${event.status === 'ARRIVED' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
+  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 border border-[#A5A79B]/20 hover:bg-white transition">
+    <div className={`p-2 rounded-lg ${event.status === 'ARRIVED' ? 'bg-emerald-50 text-emerald-700' : 'bg-[#690907]/10 text-[#690907]'}`}>
       <MapPin className="w-4 h-4" />
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-slate-800 truncate">{event.stop?.name || `Stop ${event.stopIndex}`}</p>
-      <p className="text-xs text-slate-500">{event.status} · ETA: {event.etaMinutes ?? '—'} min</p>
+      <p className="text-sm font-semibold text-[#292522] truncate">{event.stop?.name || `Stop ${event.stopIndex}`}</p>
+      <p className="text-xs text-[#5A534C]">{event.status} · ETA: {event.etaMinutes ?? '—'} min</p>
     </div>
-    <p className="text-xs text-slate-400">{new Date(event.timestamp).toLocaleTimeString()}</p>
+    <p className="text-xs text-[#8C827A]">{new Date(event.timestamp).toLocaleTimeString()}</p>
   </div>
 );
 
 const QuickLink = ({ to, icon: Icon, label }) => (
   <Link
     to={to}
-    className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100/80 transition group"
+    className="flex items-center gap-3 p-4 bg-[#F5F0E8]/70 border border-[#A5A79B]/25 rounded-xl hover:bg-white/90 hover:border-[#690907]/30 transition group"
   >
-    <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+    <div className="p-2 rounded-lg bg-[#690907]/10 text-[#690907] group-hover:bg-[#690907] group-hover:text-white transition-colors">
       <Icon className="w-5 h-5" />
     </div>
-    <span className="flex-1 text-slate-800 font-medium">{label}</span>
-    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition" />
+    <span className="flex-1 text-[#292522] font-semibold">{label}</span>
+    <ChevronRight className="w-5 h-5 text-[#8C827A] group-hover:text-[#690907] group-hover:translate-x-0.5 transition" />
   </Link>
 );
 
 // ===== MAIN COMPONENT =====
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({});
-  const [trips, setTrips] = useState([]);
-  const [events, setEvents] = useState([]);
+  const cachedStats = apiCache.peek('/admin/dashboard');
+  const cachedTrips = apiCache.peek('/admin/trips');
+  const cachedEvents = apiCache.peek('/admin/events');
+  const cachedBuses = apiCache.peek('/admin/live-buses');
+  const cachedAnalytics = apiCache.peek('/admin/analytics');
+
+  const [stats, setStats] = useState(cachedStats || {});
+  const [trips, setTrips] = useState(cachedTrips || []);
+  const [events, setEvents] = useState(cachedEvents || []);
   const [sosAlert, setSosAlert] = useState(null);
-  const [visitorCount, setVisitorCount] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [visitorCount, setVisitorCount] = useState(cachedStats?.liveVisitors || 1);
+  const [hasLoaded, setHasLoaded] = useState(Boolean(cachedStats));
+  const hasLoadedRef = useRef(Boolean(cachedStats));
+  const [isInitialLoading, setIsInitialLoading] = useState(!cachedStats);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [syncError, setSyncError] = useState(null);
+  const [lastRefreshed, setLastRefreshed] = useState(Date.now());
   const [clearing, setClearing] = useState(false);
-  const [liveBuses, setLiveBuses] = useState([]);
-  const [analytics, setAnalytics] = useState(null);
+  const [liveBuses, setLiveBuses] = useState(cachedBuses || []);
+  const [analytics, setAnalytics] = useState(cachedAnalytics || null);
 
   const socketHandlers = useMemo(() => ({
-    'trip:sos': setSosAlert,
+    'trip:sos': (alert) => {
+      setSosAlert(alert);
+      if (alert?.tripId) {
+        setTrips(prev => prev.map(t => (t._id === alert.tripId ? { ...t, sos: true } : t)));
+      }
+    },
     'stats:live_visitors': (count) => {
       if (count != null) setVisitorCount(Math.max(1, count));
+    },
+    'trip:location_update': (payload) => {
+      if (!payload?.tripId) return;
+      // Incrementally update matching bus location without full refetch
+      setLiveBuses(prev => prev.map(b => {
+        if (b.tripId === payload.tripId || b._id === payload.busId) {
+          return {
+            ...b,
+            lastPosition: { lat: payload.lat, lng: payload.lng },
+            speed: payload.speed ?? b.speed,
+            updatedAt: payload.timestamp || Date.now()
+          };
+        }
+        return b;
+      }));
+    },
+    'bus:trip_started': () => {
+      apiCache.invalidate('/admin');
+      fetchDataRef.current?.(true);
+    },
+    'bus:trip_ended': () => {
+      apiCache.invalidate('/admin');
+      fetchDataRef.current?.(true);
     },
     'admin:joined': () => { }
   }), []);
@@ -219,59 +259,108 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (socket && isConnected) {
       socket.emit('admin:join');
-      socket.emit('stats:get_visitors');
     }
   }, [socket, isConnected]);
 
   const fetchData = async (isManualRefresh = false) => {
-    if (isManualRefresh) setRefreshing(true);
-    else setLoading(true);
-    setError(null);
     try {
-      const [statsRes, tripsRes, eventsRes, analyticsRes] = await Promise.all([
-        api.get('/admin/dashboard'),
-        api.get('/admin/trips'),
-        api.get('/admin/events'),
-        api.get('/admin/analytics').catch(() => ({ data: null }))
-      ]);
-      setStats(statsRes.data);
-      if (statsRes.data?.liveVisitors) {
-        setVisitorCount(Math.max(1, statsRes.data.liveVisitors));
+      if (!hasLoadedRef.current) {
+        setIsInitialLoading(true);
+      } else {
+        setRefreshing(true);
       }
-      setTrips(tripsRes.data);
-      setEvents(eventsRes.data);
-      if (analyticsRes.data) setAnalytics(analyticsRes.data);
+      setSyncError(null);
+
+      const [statsData, tripsData, eventsData, liveBusesData, analyticsData] = await Promise.all([
+        apiCache.fetchWithCache('/admin/dashboard', { ttl: CACHE_TTL.DASHBOARD, forceFresh: isManualRefresh }),
+        apiCache.fetchWithCache('/admin/trips', { ttl: CACHE_TTL.DASHBOARD, forceFresh: isManualRefresh }).catch(() => []),
+        apiCache.fetchWithCache('/admin/events', { ttl: CACHE_TTL.DASHBOARD, forceFresh: isManualRefresh }).catch(() => []),
+        apiCache.fetchWithCache('/admin/live-buses', { ttl: 15000, forceFresh: isManualRefresh }).catch(() => []),
+        apiCache.fetchWithCache('/admin/analytics', { ttl: CACHE_TTL.STANDARD, forceFresh: isManualRefresh }).catch(() => null)
+      ]);
+
+      setStats(statsData || {});
+      if (statsData?.liveVisitors) {
+        setVisitorCount(Math.max(1, statsData.liveVisitors));
+      }
+      setTrips(tripsData || []);
+      setEvents(eventsData || []);
+      setLiveBuses(liveBusesData || []);
+      setAnalytics(analyticsData || null);
+
+      hasLoadedRef.current = true;
+      setHasLoaded(true);
+      setError(null);
+      setLastRefreshed(Date.now());
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load dashboard');
+      console.error('Dashboard fetch error:', err);
+      const errMsg = err.response?.data?.message || err.message || 'Failed to load dashboard data';
+      if (!hasLoadedRef.current) {
+        setError(errMsg);
+      } else {
+        // Keep existing data visible! Never unmount on background refresh error!
+        setSyncError('Sync paused — displaying cached data');
+      }
     } finally {
-      setLoading(false);
+      setIsInitialLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  const fetchDataRef = useRef(fetchData);
+  useEffect(() => { fetchDataRef.current = fetchData; }, [fetchData]);
 
-  // Fetch live bus positions every 5 seconds
   useEffect(() => {
-    const fetchLiveBuses = async () => {
-      try {
-        const res = await api.get('/admin/live-buses');
-        setLiveBuses(res.data);
-      } catch { }
+    fetchData(true);
+
+    const POLL_INTERVAL = 15000;
+    let interval = null;
+
+    const startPolling = () => {
+      if (!interval) {
+        interval = setInterval(() => {
+          fetchDataRef.current?.(false);
+        }, POLL_INTERVAL);
+      }
     };
-    fetchLiveBuses();
-    const interval = setInterval(fetchLiveBuses, 5000);
-    return () => clearInterval(interval);
+
+    const stopPolling = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDataRef.current?.(false);
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+
+    startPolling();
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   const handleClearEvents = async () => {
-    if (!confirm('Clear all stop events?')) return;
+    if (!window.confirm('Are you sure you want to clear all stop events? This cannot be undone.')) {
+      return;
+    }
     setClearing(true);
     try {
       await api.delete('/admin/events');
       setEvents([]);
-    } catch {
-      alert('Failed to clear events');
+      apiCache.invalidate('/admin/events');
+    } catch (err) {
+      console.error('Failed to clear events:', err);
+      alert(err.response?.data?.message || 'Failed to clear events');
     } finally {
       setClearing(false);
     }
@@ -289,20 +378,20 @@ const AdminDashboard = () => {
     }
   };
 
-  // Loading
-  if (loading) {
-    return <TrackMateLoader message="Loading dashboard..." />;
+  // Initial loading only when no cached data is available yet
+  if (isInitialLoading && !hasLoaded) {
+    return <DashboardSkeleton />;
   }
 
-  // Error
-  if (error) {
+  // Error only on initial load when no data exists
+  if (error && !hasLoaded) {
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center max-w-sm shadow-lg">
-          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <p className="text-slate-900 font-semibold mb-2">Failed to load</p>
-          <p className="text-slate-500 text-sm mb-4">{error}</p>
-          <button onClick={() => fetchData(false)} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition shadow-md">
+        <div className="bg-white/90 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-6 text-center max-w-sm shadow-lg">
+          <AlertTriangle className="w-12 h-12 text-[#690907] mx-auto mb-4" />
+          <p className="text-[#292522] font-semibold mb-2">Failed to load</p>
+          <p className="text-[#8C827A] text-sm mb-4">{error}</p>
+          <button onClick={() => fetchData(true)} className="px-6 py-2.5 bg-[#690907] hover:bg-[#82110f] text-white rounded-xl font-medium transition shadow-md shadow-[#690907]/20">
             Try Again
           </button>
         </div>
@@ -315,13 +404,13 @@ const AdminDashboard = () => {
       {/* SOS Alert */}
       {sosAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="card-elevated p-6 max-w-sm w-full text-center bg-red-950 border-red-500/50">
-            <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <AlertTriangle className="w-8 h-8 text-red-400" />
+          <div className="card-elevated p-6 max-w-sm w-full text-center bg-[#330302] border border-[#690907]">
+            <div className="w-16 h-16 rounded-full bg-[#690907]/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <AlertTriangle className="w-8 h-8 text-[#CB6F6D]" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Emergency Alert</h2>
-            <p className="text-red-200 mb-2">{sosAlert.message}</p>
-            <p className="text-red-300/60 text-xs mb-4">Trip: {sosAlert.tripId}</p>
+            <p className="text-[#ECC5C5] mb-2">{sosAlert.message}</p>
+            <p className="text-[#DE9E9E]/60 text-xs mb-4">Trip: {sosAlert.tripId}</p>
             <button onClick={() => setSosAlert(null)} className="w-full py-3 bg-white/10 rounded-xl text-white font-medium hover:bg-white/20 transition">
               Dismiss
             </button>
@@ -333,19 +422,29 @@ const AdminDashboard = () => {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900">Admin Dashboard</h1>
-            <p className="text-slate-500 text-sm font-medium">Overview of your fleet</p>
+            <h1 className="text-2xl font-extrabold text-[#292522]">Admin Dashboard</h1>
+            <p className="text-[#5A534C] text-sm font-medium">Overview of your campus fleet</p>
           </div>
           <div className="flex items-center gap-3">
+            {syncError && (
+              <span className="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-medium" title={syncError}>
+                ⚠️ Cached
+              </span>
+            )}
+            {lastRefreshed && !syncError && (
+              <span className="text-xs text-[#8C827A] hidden sm:inline" title="Background auto-sync active">
+                Synced {new Date(lastRefreshed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
             <button
               onClick={() => fetchData(true)}
               title="Refresh dashboard"
-              className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 transition shadow-sm"
+              className="p-2.5 rounded-xl bg-white/85 border border-[#A5A79B]/30 text-[#292522] hover:text-[#690907] hover:border-[#690907]/40 transition shadow-sm active:scale-95"
             >
-              <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin text-blue-600' : ''}`} />
+              <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin text-[#690907]' : ''}`} />
             </button>
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-bold shadow-sm">
-              <Activity className="w-4 h-4 text-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8D2B5]/30 text-[#690907] border border-[#E8D2B5] text-sm font-bold shadow-sm">
+              <Activity className="w-4 h-4 text-[#690907] animate-pulse" />
               <span>{visitorCount} Online</span>
             </div>
           </div>
@@ -357,7 +456,7 @@ const AdminDashboard = () => {
             icon={Bus}
             label="Total Buses"
             value={stats.busCount}
-            color="blue"
+            color="burgundy"
             to="/admin/buses"
             actionText="Manage Buses"
           />
@@ -381,7 +480,7 @@ const AdminDashboard = () => {
             icon={Navigation}
             label="Active Trips"
             value={stats.activeTrips ?? 0}
-            color="purple"
+            color="sage"
             badge={stats.activeTrips > 0 ? `${stats.activeTrips} live` : undefined}
             onClick={() => scrollToSection('active-trips')}
             actionText="View Active Trips"
@@ -390,7 +489,7 @@ const AdminDashboard = () => {
             icon={Clock}
             label="Avg Trip Duration"
             value={analytics ? formatDuration(analytics.averageDurationMinutes) : '—'}
-            color="indigo"
+            color="cream"
             onClick={handleExportCSV}
             actionText="Export CSV History"
           />
@@ -398,15 +497,15 @@ const AdminDashboard = () => {
             icon={MapPin}
             label="Today's Events"
             value={analytics?.todayEvents ?? 0}
-            color="sky"
+            color="charcoal"
             onClick={() => scrollToSection('events-section')}
             actionText="View Stop Events"
           />
         </section>
 
         {/* Quick Links */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h2>
+        <section className="bg-white/85 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-[#292522] mb-4">Quick Actions</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <QuickLink to="/admin/buses" icon={Bus} label="Manage Buses" />
             <QuickLink to="/admin/drivers" icon={UserCheck} label="Manage Drivers" />
@@ -415,32 +514,32 @@ const AdminDashboard = () => {
             <QuickLink to="/admin/students" icon={Users} label="Manage Students" />
             <QuickLink to="/admin/assignments" icon={MapPin} label="Assignments" />
           </div>
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-4 border-t border-[#A5A79B]/20">
             <button
               onClick={handleExportCSV}
-              className="w-full flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100/80 transition group"
+              className="w-full flex items-center gap-3 p-4 bg-[#F5F0E8]/70 border border-[#A5A79B]/25 rounded-xl hover:bg-white/90 transition group"
             >
-              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">
                 <Download className="w-5 h-5" />
               </div>
-              <span className="flex-1 text-left text-slate-800 font-medium">Export Trip History (CSV)</span>
-              <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition" />
+              <span className="flex-1 text-left text-[#292522] font-semibold">Export Trip History (CSV)</span>
+              <ChevronRight className="w-5 h-5 text-[#8C827A] group-hover:text-[#690907] group-hover:translate-x-0.5 transition" />
             </button>
           </div>
         </section>
 
         {/* Live Fleet Map */}
-        <section id="fleet-map" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <section id="fleet-map" className="bg-white/85 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Map className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-bold text-slate-900">Live Fleet Map</h2>
+              <Map className="w-5 h-5 text-[#690907]" />
+              <h2 className="text-lg font-bold text-[#292522]">Live Fleet Map</h2>
             </div>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E8D2B5]/30 text-[#690907] border border-[#E8D2B5]">
               {liveBuses.length} {liveBuses.length === 1 ? 'bus' : 'buses'} active
             </span>
           </div>
-          <div className="h-80 rounded-xl overflow-hidden border border-slate-100">
+          <div className="h-80 rounded-xl overflow-hidden border border-[#A5A79B]/25">
             <AdminMap buses={liveBuses} sosTrips={sosAlert ? [sosAlert] : []} />
           </div>
         </section>
@@ -448,10 +547,10 @@ const AdminDashboard = () => {
         {/* Active Trips & Events */}
         <section className="grid lg:grid-cols-2 gap-6">
           {/* Active Trips */}
-          <div id="active-trips" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div id="active-trips" className="bg-white/85 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-slate-900">Active Trips</h2>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+              <h2 className="text-lg font-bold text-[#292522]">Active Trips</h2>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#A5A79B]/15 text-[#55564E]">
                 {trips.length} {trips.length === 1 ? 'trip' : 'trips'}
               </span>
             </div>
@@ -459,23 +558,23 @@ const AdminDashboard = () => {
               {trips.length > 0 ? (
                 trips.map(trip => <TripCard key={trip._id} trip={trip} />)
               ) : (
-                <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                  <Navigation className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-slate-500 text-sm font-medium">No active trips right now</p>
+                <div className="text-center py-10 bg-[#F5F0E8]/60 rounded-xl border border-dashed border-[#A5A79B]/30">
+                  <Navigation className="w-8 h-8 text-[#A5A79B] mx-auto mb-2" />
+                  <p className="text-[#8C827A] text-sm font-medium">No active trips right now</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Recent Events */}
-          <div id="events-section" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div id="events-section" className="bg-white/85 backdrop-blur-md border border-[#A5A79B]/30 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-slate-900">Recent Events</h2>
+              <h2 className="text-lg font-bold text-[#292522]">Recent Events</h2>
               {events.length > 0 && (
                 <button
                   onClick={handleClearEvents}
                   disabled={clearing}
-                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-500 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-[#690907] hover:bg-[#690907]/10 rounded-lg transition disabled:opacity-50"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   {clearing ? 'Clearing...' : 'Clear'}
@@ -486,9 +585,9 @@ const AdminDashboard = () => {
               {events.length > 0 ? (
                 events.slice(0, 10).map(event => <EventItem key={event._id} event={event} />)
               ) : (
-                <div className="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                  <MapPin className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-slate-500 text-sm font-medium">No events recorded today</p>
+                <div className="text-center py-10 bg-[#F5F0E8]/60 rounded-xl border border-dashed border-[#A5A79B]/30">
+                  <MapPin className="w-8 h-8 text-[#A5A79B] mx-auto mb-2" />
+                  <p className="text-[#8C827A] text-sm font-medium">No events recorded today</p>
                 </div>
               )}
             </div>

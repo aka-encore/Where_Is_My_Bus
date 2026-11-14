@@ -2,6 +2,7 @@ import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { api, setAuthToken } from '../utils/api';
 import { disconnectSocket, refreshSocketAuth } from '../hooks/useSocket';
+import { apiCache } from '../utils/apiCache';
 
 const TOKEN_KEY = 'tm_token';
 const USER_KEY = 'tm_user';
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     disconnectSocket();
+    apiCache.clear();
   }, []);
 
   const persistSession = useCallback((nextToken, nextUser) => {
@@ -74,10 +76,8 @@ export const AuthProvider = ({ children }) => {
     async ({ username, password }) => {
       const { data } = await api.post('/auth/login', { username, password });
       persistSession(data.token, data.user);
-      // Redirect to profile on first login so user changes default password
-      const destination = data.user.firstLogin
-        ? '/profile'
-        : (roleRedirect[data.user.role] || '/login');
+      // Always redirect to respective role dashboard
+      const destination = roleRedirect[data.user.role] || '/login';
       navigate(destination, { replace: true });
       return data.user;
     },

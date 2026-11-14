@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
 const cors = require('cors');
@@ -40,7 +41,7 @@ app.use(express.json());
 // Rate limiting for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 10 login attempts per window
+  max: process.env.NODE_ENV === 'production' ? 10 : 200, // permissive in development
   message: { message: 'Too many login attempts, please try again after 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false
@@ -50,7 +51,7 @@ const authLimiter = rateLimit({
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // limit each IP to 5 registration attempts per hour
+  max: process.env.NODE_ENV === 'production' ? 5 : 100,
   message: { message: 'Too many registration attempts, please try again later' },
   standardHeaders: true,
   legacyHeaders: false
@@ -82,51 +83,51 @@ app.get('/ping', (_req, res) => {
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>WhereIsMyBus — Status</title>
+<title>Where Is My Bus — Status</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0e1a;color:#e2e8f0;overflow:hidden}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#292522;color:#F5F0E8;overflow:hidden}
 .bg{position:fixed;inset:0;z-index:0}
-.bg span{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:float 8s ease-in-out infinite alternate}
-.bg span:nth-child(1){width:400px;height:400px;background:#3B82F6;top:-10%;left:-5%}
-.bg span:nth-child(2){width:350px;height:350px;background:#06b6d4;bottom:-10%;right:-5%;animation-delay:2s}
-.bg span:nth-child(3){width:250px;height:250px;background:#3B82F6;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:4s}
+.bg span{position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;animation:float 8s ease-in-out infinite alternate}
+.bg span:nth-child(1){width:400px;height:400px;background:#690907;top:-10%;left:-5%}
+.bg span:nth-child(2){width:350px;height:350px;background:#E8D2B5;bottom:-10%;right:-5%;animation-delay:2s}
+.bg span:nth-child(3){width:250px;height:250px;background:#A5A79B;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:4s}
 @keyframes float{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,-20px) scale(1.1)}}
-.card{position:relative;z-index:1;background:rgba(15,23,42,.65);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:2.5rem 3rem;text-align:center;max-width:380px;width:90%;box-shadow:0 25px 60px rgba(0,0,0,.4)}
-.logo{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:1.5rem;background:linear-gradient(135deg,#3B82F6,#60A5FA);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo span{font-size:.7rem;display:block;font-weight:500;letter-spacing:.15em;text-transform:uppercase;-webkit-text-fill-color:#64748b;margin-top:.25rem}
+.card{position:relative;z-index:1;background:rgba(41,37,34,.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(232,210,181,.2);border-radius:24px;padding:2.5rem 3rem;text-align:center;max-width:380px;width:90%;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+.logo{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:1.5rem;background:linear-gradient(135deg,#E8D2B5,#F5F0E8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{font-size:.7rem;display:block;font-weight:500;letter-spacing:.15em;text-transform:uppercase;-webkit-text-fill-color:#A5A79B;margin-top:.25rem}
 .pulse-wrap{display:flex;align-items:center;justify-content:center;gap:.6rem;margin-bottom:1.75rem}
 .pulse{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e80;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 8px #22c55e60}50%{box-shadow:0 0 20px #22c55eaa,0 0 40px #22c55e40}}
 .status{font-size:1rem;font-weight:600;color:#22c55e}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
-.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:.85rem .5rem}
-.stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#64748b;margin-bottom:.35rem}
-.stat-value{font-size:.95rem;font-weight:700;color:#e2e8f0}
-.stat-value.blue{color:#3B82F6}
-.foot{font-size:.65rem;color:#475569;line-height:1.6}
-.foot a{color:#3B82F6;text-decoration:none}
+.stat{background:rgba(255,255,255,.05);border:1px solid rgba(232,210,181,.12);border-radius:14px;padding:.85rem .5rem}
+.stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#A5A79B;margin-bottom:.35rem}
+.stat-value{font-size:.95rem;font-weight:700;color:#F5F0E8}
+.stat-value.accent{color:#E8D2B5}
+.foot{font-size:.65rem;color:#A5A79B;line-height:1.6}
+.foot a{color:#E8D2B5;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="bg"><span></span><span></span><span></span></div>
 <div class="card">
-  <div class="logo">WhereIsMyBus<span>System Status</span></div>
+  <div class="logo">Where Is My Bus<span>System Status</span></div>
   <div class="pulse-wrap"><div class="pulse"></div><div class="status">All Systems Operational</div></div>
   <div class="stats">
-    <div class="stat"><div class="stat-label">Uptime</div><div class="stat-value blue">${uptime}</div></div>
+    <div class="stat"><div class="stat-label">Uptime</div><div class="stat-value accent">${uptime}</div></div>
     <div class="stat"><div class="stat-label">Status</div><div class="stat-value">Online</div></div>
-    <div class="stat"><div class="stat-label">Server</div><div class="stat-value">Render</div></div>
+    <div class="stat"><div class="stat-label">Server</div><div class="stat-value">Active</div></div>
     <div class="stat"><div class="stat-label">Checked</div><div class="stat-value">${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}</div></div>
   </div>
-  <div class="foot">Monitored by UptimeRobot &middot; <a href="https://trackmaterce.onrender.com" target="_blank">Go to WhereIsMyBus</a></div>
+  <div class="foot">Monitored by System Health &middot; <a href="/">Go to Where Is My Bus</a></div>
 </div>
 </body>
 </html>`);
 });
 
 app.get('/', (_req, res) => {
-  res.json({ message: 'WhereIsMyBus backend is running' });
+  res.json({ message: 'Where Is My Bus backend is running' });
 });
 
 // Global error handler - must be last middleware

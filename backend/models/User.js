@@ -63,4 +63,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance indexes
+userSchema.index({ role: 1 });
+
 module.exports = mongoose.model('User', userSchema);

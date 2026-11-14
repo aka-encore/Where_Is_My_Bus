@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { api } from '../utils/api';
+import { apiCache, CACHE_TTL } from '../utils/apiCache';
+import { SkeletonGrid } from '../components/Skeletons';
 import Drawer from '../components/Drawer';
 import ConfirmDialog from '../components/ConfirmDialog';
 import {
@@ -17,12 +19,12 @@ const createEmptyBus = () => ({
 });
 
 /* Stat Card Component */
-const StatCard = ({ icon: Icon, label, value, subtitle, color = 'blue' }) => {
+const StatCard = ({ icon: Icon, label, value, subtitle, color = 'burgundy' }) => {
   const colors = {
-    blue: 'from-blue-500 to-blue-600',
+    burgundy: 'from-[#690907] to-[#82110f]',
     emerald: 'from-emerald-500 to-emerald-600',
     amber: 'from-amber-500 to-amber-600',
-    purple: 'from-purple-500 to-purple-600'
+    sage: 'from-[#A5A79B] to-[#707267]'
   };
 
   return (
@@ -51,8 +53,8 @@ const BusCard = ({ bus, onEdit, onDelete, selectionMode, isSelected, onToggleSel
 
   return (
     <div
-      className={`card p-4 transition-all group cursor-pointer ${isSelected ? 'border-blue-500 bg-blue-500/5 ring-1 ring-blue-500/30'
-          : 'hover:border-blue-500/30'
+      className={`card p-4 transition-all group cursor-pointer ${isSelected ? 'border-[#690907] bg-[#690907]/5 ring-1 ring-[#690907]/30'
+          : 'hover:border-[#690907]/30'
         }`}
       onClick={handleCardClick}
     >
@@ -61,14 +63,14 @@ const BusCard = ({ bus, onEdit, onDelete, selectionMode, isSelected, onToggleSel
           {selectionMode && (
             <div className="flex-shrink-0">
               {isSelected
-                ? <CheckSquare className="w-5 h-5 text-blue-400" />
+                ? <CheckSquare className="w-5 h-5 text-[#690907]" />
                 : <Square className="w-5 h-5 text-slate-500" />
               }
             </div>
           )}
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${hasRoute ? 'bg-blue-500/20' : 'bg-slate-700'
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${hasRoute ? 'bg-[#690907]/20' : 'bg-slate-700'
             }`}>
-            <Bus className={`w-5 h-5 ${hasRoute ? 'text-blue-400' : 'text-slate-400'}`} />
+            <Bus className={`w-5 h-5 ${hasRoute ? 'text-[#690907]' : 'text-slate-400'}`} />
           </div>
           <div className="min-w-0">
             <h3 className="text-white font-semibold truncate">{bus.name}</h3>
@@ -103,7 +105,7 @@ const BusCard = ({ bus, onEdit, onDelete, selectionMode, isSelected, onToggleSel
           <div className="flex items-center gap-1">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(bus); }}
-              className="p-2 rounded-lg text-blue-400 hover:bg-blue-500/20 transition"
+              className="p-2 rounded-lg text-[#690907] hover:bg-[#690907]/20 transition"
               title="Edit bus"
             >
               <Edit2 className="w-4 h-4" />
@@ -123,9 +125,16 @@ const BusCard = ({ bus, onEdit, onDelete, selectionMode, isSelected, onToggleSel
 };
 
 const ManageBuses = () => {
-  const [buses, setBuses] = useState([]);
-  const [routes, setRoutes] = useState([]);
-  const [drivers, setDrivers] = useState([]);
+  const cachedBuses = apiCache.peek('/buses');
+  const cachedRoutes = apiCache.peek('/routes');
+  const cachedDrivers = apiCache.peek('/admin/drivers');
+
+  const [buses, setBuses] = useState(cachedBuses || []);
+  const [routes, setRoutes] = useState(cachedRoutes || []);
+  const [drivers, setDrivers] = useState(cachedDrivers || []);
+  const [hasLoaded, setHasLoaded] = useState(Boolean(cachedBuses));
+  const [loading, setLoading] = useState(!cachedBuses);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [form, setForm] = useState(() => createEmptyBus());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingBus, setEditingBus] = useState(null);
@@ -138,28 +147,30 @@ const ManageBuses = () => {
   const [selectionMode, setSelectionMode] = useState(false);
   const [bulkConfirm, setBulkConfirm] = useState(false);
 
-  const loadBuses = async () => {
-    try {
-      const res = await api.get('/buses');
-      setBuses(res.data);
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Unable to load buses');
-    }
-  };
+  const loadData = async (isManual = false) => {
+    if (!hasLoaded) setLoading(true);
+    else setIsRefreshing(true);
 
-  const loadRoutesAndDrivers = async () => {
     try {
-      const [routesRes, driversRes] = await Promise.all([api.get('/routes'), api.get('/admin/drivers')]);
-      setRoutes(routesRes.data);
-      setDrivers(driversRes.data);
+      const [busesData, routesData, driversData] = await Promise.all([
+        apiCache.fetchWithCache('/buses', { ttl: CACHE_TTL.STANDARD, forceFresh: isManual }),
+        apiCache.fetchWithCache('/routes', { ttl: CACHE_TTL.STATIC, forceFresh: isManual }),
+        apiCache.fetchWithCache('/admin/drivers', { ttl: CACHE_TTL.STANDARD, forceFresh: isManual })
+      ]);
+      setBuses(busesData || []);
+      setRoutes(routesData || []);
+      setDrivers(driversData || []);
+      setHasLoaded(true);
     } catch (error) {
-      toast.error('Unable to load supporting data');
+      toast.error('Unable to load fleet data');
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
   useEffect(() => {
-    loadBuses();
-    loadRoutesAndDrivers();
+    loadData();
   }, []);
 
   const openCreate = () => {
@@ -198,10 +209,12 @@ const ManageBuses = () => {
         await api.post('/buses', payload);
         toast.success('Bus added');
       }
+      apiCache.invalidate('/buses');
+      apiCache.invalidate('/admin/dashboard');
       setDrawerOpen(false);
       setForm(createEmptyBus());
       setEditingBus(null);
-      loadBuses();
+      loadData(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to save bus');
     }
@@ -214,8 +227,10 @@ const ManageBuses = () => {
     try {
       await api.delete(`/buses/${confirmState.target._id}`);
       toast.success('Bus removed');
+      apiCache.invalidate('/buses');
+      apiCache.invalidate('/admin/dashboard');
       setConfirmState({ open: false, target: null });
-      loadBuses();
+      loadData(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to delete bus');
     }
@@ -290,7 +305,7 @@ const ManageBuses = () => {
             <button
               onClick={() => { if (selectionMode) exitSelection(); else setSelectionMode(true); }}
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border font-medium transition sm:w-auto ${selectionMode
-                  ? 'border-blue-500 text-blue-400 bg-blue-500/10'
+                  ? 'border-[#690907] text-[#690907] bg-[#690907]/10'
                   : 'border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20'
                 }`}
             >
@@ -300,7 +315,7 @@ const ManageBuses = () => {
             {!selectionMode && (
               <button
                 onClick={openCreate}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition sm:w-auto flex-1"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition sm:w-auto flex-1"
               >
                 <Plus className="w-5 h-5" />
                 Add Bus
@@ -311,10 +326,10 @@ const ManageBuses = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard icon={Bus} label="Total Buses" value={buses.length} subtitle="In fleet" color="blue" />
+          <StatCard icon={Bus} label="Total Buses" value={buses.length} subtitle="In fleet" color="burgundy" />
           <StatCard icon={Navigation} label="Active" value={activeBuses} subtitle="On routes" color="emerald" />
           <StatCard icon={Bus} label="Idle" value={buses.length - activeBuses} subtitle="Available" color="amber" />
-          <StatCard icon={Users} label="Capacity" value={totalCapacity} subtitle="Total seats" color="purple" />
+          <StatCard icon={Users} label="Capacity" value={totalCapacity} subtitle="Total seats" color="sage" />
         </div>
 
         {/* Search & Filters */}
@@ -328,7 +343,7 @@ const ManageBuses = () => {
                 placeholder="Search buses..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               />
               {search && (
                 <button
@@ -344,14 +359,14 @@ const ManageBuses = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition sm:w-auto w-full justify-center ${hasActiveFilters
-                  ? 'border-blue-500 text-blue-400 bg-blue-500/10'
+                  ? 'border-[#690907] text-[#690907] bg-[#690907]/10'
                   : 'border-white/10 text-slate-400 hover:text-white hover:border-white/20'
                 }`}
             >
               <Filter className="w-4 h-4" />
               <span className="text-sm font-medium">Filters</span>
               {hasActiveFilters && (
-                <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#690907] text-white text-xs flex items-center justify-center">
                   {(routeFilter !== 'all' ? 1 : 0) + (statusFilter !== 'all' ? 1 : 0)}
                 </span>
               )}
@@ -367,7 +382,7 @@ const ManageBuses = () => {
                 <select
                   value={routeFilter}
                   onChange={(e) => setRouteFilter(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-blue-500/50"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-[#690907]/50"
                 >
                   <option value="all">All routes</option>
                   {routes.map((route) => (
@@ -380,7 +395,7 @@ const ManageBuses = () => {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-blue-500/50"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-[#690907]/50"
                 >
                   <option value="all">All buses</option>
                   <option value="assigned">On route</option>
@@ -390,7 +405,7 @@ const ManageBuses = () => {
               {hasActiveFilters && (
                 <button
                   onClick={() => { setRouteFilter('all'); setStatusFilter('all'); }}
-                  className="sm:col-span-2 text-sm text-blue-400 hover:text-blue-300 transition"
+                  className="sm:col-span-2 text-sm text-[#690907] hover:text-[#E8D2B5] transition"
                 >
                   Clear all filters
                 </button>
@@ -400,7 +415,9 @@ const ManageBuses = () => {
         </div>
 
         {/* Buses Grid */}
-        {filteredBuses.length > 0 ? (
+        {loading && !hasLoaded ? (
+          <SkeletonGrid count={6} />
+        ) : filteredBuses.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredBuses.map((bus) => (
               <BusCard
@@ -443,7 +460,7 @@ const ManageBuses = () => {
             <button
               type="submit"
               form="bus-form"
-              className="flex-1 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition"
             >
               {editingBus ? 'Save Changes' : 'Add Bus'}
             </button>
@@ -457,7 +474,7 @@ const ManageBuses = () => {
               name="name"
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., Bus Alpha"
               required
             />
@@ -468,7 +485,7 @@ const ManageBuses = () => {
               name="numberPlate"
               value={form.numberPlate}
               onChange={(e) => setForm((prev) => ({ ...prev, numberPlate: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 uppercase"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50 uppercase"
               placeholder="e.g., TN 01 AB 1234"
               required
             />
@@ -481,7 +498,7 @@ const ManageBuses = () => {
               min="1"
               value={form.capacity}
               onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               required
             />
           </div>
@@ -491,7 +508,7 @@ const ManageBuses = () => {
               name="route"
               value={form.route}
               onChange={(e) => setForm((prev) => ({ ...prev, route: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-[#690907]/50"
             >
               <option value="">Unassigned</option>
               {routes.map((route) => (
@@ -505,7 +522,7 @@ const ManageBuses = () => {
               name="driver"
               value={form.driver}
               onChange={(e) => setForm((prev) => ({ ...prev, driver: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-[#690907]/50"
             >
               <option value="">Unassigned</option>
               {drivers.map((driver) => (
@@ -537,7 +554,7 @@ const ManageBuses = () => {
           <div className="w-px h-6 bg-white/10" />
           <button
             onClick={selectAll}
-            className="text-xs text-blue-400 hover:text-blue-300 font-medium whitespace-nowrap"
+            className="text-xs text-[#690907] hover:text-[#E8D2B5] font-medium whitespace-nowrap"
           >
             Select all ({filteredBuses.length})
           </button>

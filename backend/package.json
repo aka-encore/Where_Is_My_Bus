@@ -1,7 +1,7 @@
 {
-  "name": "trackmate-backend",
+  "name": "where-is-my-bus-backend",
   "version": "1.0.0",
-  "description": "WhereIsMyBus realtime school bus tracking backend",
+  "description": "Where Is My Bus realtime bus tracking backend",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {

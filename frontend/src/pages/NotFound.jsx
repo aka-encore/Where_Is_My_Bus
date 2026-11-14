@@ -12,7 +12,7 @@ const NotFound = () => {
         <div className="nf-logo-wrap">
           <img
             src="/logohorigental.svg"
-            alt="WhereIsMyBus"
+            alt="Where Is My Bus"
             className="nf-logo"
           />
         </div>
@@ -22,12 +22,12 @@ const NotFound = () => {
           <span className="nf-code">4</span>
           <div className="nf-icon-ring">
             <svg className="nf-bus-icon" viewBox="0 0 64 64" fill="none">
-              <rect x="12" y="8" width="40" height="40" rx="8" fill="#3B82F6" />
+              <rect x="12" y="8" width="40" height="40" rx="8" fill="#690907" />
               <rect x="18" y="14" width="28" height="14" rx="4" fill="#fff" opacity="0.9" />
               <rect x="18" y="14" width="13" height="14" rx="4" fill="#fff" opacity="0.9" />
               <rect x="33" y="14" width="13" height="14" rx="4" fill="#fff" opacity="0.9" />
-              <circle cx="22" cy="48" r="5" fill="#334155" stroke="#3B82F6" strokeWidth="2" />
-              <circle cx="42" cy="48" r="5" fill="#334155" stroke="#3B82F6" strokeWidth="2" />
+              <circle cx="22" cy="48" r="5" fill="#334155" stroke="#690907" strokeWidth="2" />
+              <circle cx="42" cy="48" r="5" fill="#334155" stroke="#690907" strokeWidth="2" />
               <rect x="28" y="32" width="8" height="10" rx="2" fill="#fff" opacity="0.5" />
             </svg>
           </div>
@@ -55,7 +55,7 @@ const NotFound = () => {
 
         {/* Footer */}
         <p className="nf-footer">
-          WhereIsMyBus &mdash; Smart Bus Tracking System
+          Where Is My Bus &mdash; Smart Bus Tracking System
         </p>
       </div>
     </main>

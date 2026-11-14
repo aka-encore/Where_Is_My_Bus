@@ -1,8 +1,8 @@
-# TrackMate - UI Documentation
+# Where Is My Bus - UI Documentation
 
 ## 1. UI Scope
 
-This document summarizes the current frontend experience in the TrackMate codebase. It reflects the present implementation in `frontend/src` rather than the older exhaustive design inventory.
+This document summarizes the current frontend experience in the Where Is My Bus codebase. It reflects the present implementation in `frontend/src` rather than the older exhaustive design inventory.
 
 The UI is organized around four user-facing surfaces:
 
@@ -154,7 +154,7 @@ Important shared components in the current implementation:
 
 - `Navbar`
 - `ProtectedRoute`
-- `TrackMateLoader`
+- `Where Is My BusLoader`
 - `AdminMap`
 - `DriverMap`
 - `StudentMap`

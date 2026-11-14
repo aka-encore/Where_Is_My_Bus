@@ -28,7 +28,7 @@ const inferApiBaseUrl = () => {
     return envUrl.replace(/\/+$/, ''); // strip trailing slash
   }
 
-  console.warn('[TrackMate] VITE_BACKEND_URL not set — falling back to relative URL');
+  console.warn('[Where Is My Bus] VITE_BACKEND_URL not set — falling back to relative URL');
   return '';
 };
 
@@ -36,5 +36,5 @@ export const API_BASE_URL = inferApiBaseUrl();
 export const API_ROOT = `${API_BASE_URL}/api`;
 
 if (typeof window !== 'undefined') {
-  console.info('[TrackMate] API server:', API_BASE_URL || '(same origin)');
+  console.info('[Where Is My Bus] API server:', API_BASE_URL || '(same origin)');
 }

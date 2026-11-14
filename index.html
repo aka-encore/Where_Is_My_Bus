@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrackMate | Smart Bus Tracking</title>
+  <title>Where Is My Bus | Real-Time Campus Bus Tracking</title>
   <meta
     name="description"
-    content="TrackMate is a smart bus tracking platform for campuses with live tracking, ETA updates, arrival alerts, and driver safety tools."
+    content="Where Is My Bus is a smart bus tracking platform for campuses with live tracking, ETA updates, arrival alerts, and driver safety tools."
   />
-  <meta name="theme-color" content="#ff6b2c" />
+  <meta name="theme-color" content="#690907" />
   <style>
     :root {
-      --tm-orange: #ff6b2c;
-      --tm-orange-deep: #e55418;
-      --tm-orange-soft: #fff2eb;
-      --tm-cream: #fffaf7;
+      --tm-orange: #690907;
+      --tm-orange-deep: #540705;
+      --tm-orange-soft: #F5F0E8;
+      --tm-cream: #E8D2B5;
       --tm-white: #ffffff;
-      --tm-ink: #22160f;
-      --tm-muted: #6f5b52;
-      --tm-line: rgba(255, 107, 44, 0.16);
-      --tm-shadow: 0 24px 60px rgba(255, 107, 44, 0.12);
+      --tm-ink: #292522;
+      --tm-muted: #5A534C;
+      --tm-line: rgba(105, 9, 7, 0.16);
+      --tm-shadow: 0 24px 60px rgba(105, 9, 7, 0.12);
       --tm-radius-xl: 28px;
       --tm-radius-lg: 22px;
       --tm-radius-md: 16px;
@@ -39,8 +39,8 @@
       font-family: "Segoe UI", Inter, system-ui, sans-serif;
       color: var(--tm-ink);
       background:
-        radial-gradient(circle at top left, rgba(255, 107, 44, 0.12), transparent 32%),
-        linear-gradient(180deg, #fffdfb 0%, #fff6f0 44%, #ffffff 100%);
+        radial-gradient(circle at top left, rgba(105, 9, 7, 0.12), transparent 32%),
+        linear-gradient(180deg, #F5F0E8 0%, #EFE5D8 44%, #ffffff 100%);
     }
 
     img {
@@ -64,7 +64,7 @@
       z-index: 20;
       backdrop-filter: blur(16px);
       background: rgba(255, 250, 247, 0.82);
-      border-bottom: 1px solid rgba(255, 107, 44, 0.1);
+      border-bottom: 1px solid rgba(105, 9, 7, 0.1);
     }
 
     .topbar-inner {
@@ -124,7 +124,7 @@
       display: none;
       width: 48px;
       height: 48px;
-      border: 1px solid rgba(255, 107, 44, 0.18);
+      border: 1px solid rgba(105, 9, 7, 0.18);
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.92);
       color: var(--tm-orange);
@@ -148,7 +148,7 @@
       padding: 0.95rem 1rem;
       border-radius: 16px;
       background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(255, 107, 44, 0.12);
+      border: 1px solid rgba(105, 9, 7, 0.12);
       color: #5f493f;
       font-weight: 600;
     }
@@ -183,13 +183,13 @@
     .btn-primary {
       color: var(--tm-white);
       background: linear-gradient(135deg, var(--tm-orange), var(--tm-orange-deep));
-      box-shadow: 0 16px 32px rgba(255, 107, 44, 0.28);
+      box-shadow: 0 16px 32px rgba(105, 9, 7, 0.28);
     }
 
     .btn-secondary {
       color: var(--tm-orange);
       background: var(--tm-white);
-      border: 1px solid rgba(255, 107, 44, 0.18);
+      border: 1px solid rgba(105, 9, 7, 0.18);
       box-shadow: 0 10px 24px rgba(34, 22, 15, 0.06);
     }
 
@@ -215,7 +215,7 @@
       font-weight: 700;
       font-size: 0.84rem;
       margin-bottom: 1rem;
-      border: 1px solid rgba(255, 107, 44, 0.15);
+      border: 1px solid rgba(105, 9, 7, 0.15);
     }
 
     .hero h1 {
@@ -274,8 +274,8 @@
 
     .hero-panel {
       position: relative;
-      background: linear-gradient(180deg, #fffaf7 0%, #ffffff 100%);
-      border: 1px solid rgba(255, 107, 44, 0.14);
+      background: linear-gradient(180deg, #E8D2B5 0%, #ffffff 100%);
+      border: 1px solid rgba(105, 9, 7, 0.14);
       border-radius: var(--tm-radius-xl);
       padding: 1.2rem;
       box-shadow: var(--tm-shadow);
@@ -287,7 +287,7 @@
       position: absolute;
       inset: auto -12% -24% 40%;
       height: 240px;
-      background: radial-gradient(circle, rgba(255, 107, 44, 0.18) 0%, rgba(255, 107, 44, 0) 72%);
+      background: radial-gradient(circle, rgba(105, 9, 7, 0.18) 0%, rgba(105, 9, 7, 0) 72%);
       pointer-events: none;
     }
 
@@ -296,7 +296,7 @@
       z-index: 1;
       border-radius: 22px;
       overflow: hidden;
-      border: 1px solid rgba(255, 107, 44, 0.14);
+      border: 1px solid rgba(105, 9, 7, 0.14);
       background: #fff;
       box-shadow: 0 18px 36px rgba(34, 22, 15, 0.08);
     }
@@ -316,7 +316,7 @@
       padding: 1rem;
       border-radius: 20px;
       background: rgba(255, 255, 255, 0.94);
-      border: 1px solid rgba(255, 107, 44, 0.16);
+      border: 1px solid rgba(105, 9, 7, 0.16);
       box-shadow: 0 14px 28px rgba(34, 22, 15, 0.1);
     }
 
@@ -422,7 +422,7 @@
       width: 100%;
       aspect-ratio: 16 / 10;
       object-fit: cover;
-      background: #fff3ec;
+      background: #F5F0E8;
     }
 
     .caption {
@@ -473,8 +473,8 @@
       justify-content: space-between;
       gap: 1.2rem;
       background:
-        radial-gradient(circle at right top, rgba(255, 107, 44, 0.15), transparent 34%),
-        linear-gradient(135deg, #fff7f2 0%, #ffffff 100%);
+        radial-gradient(circle at right top, rgba(105, 9, 7, 0.15), transparent 34%),
+        linear-gradient(135deg, #E8D2B5 0%, #ffffff 100%);
     }
 
     .cta-shell h2 {
@@ -500,7 +500,7 @@
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      border-top: 1px solid rgba(255, 107, 44, 0.12);
+      border-top: 1px solid rgba(105, 9, 7, 0.12);
       padding-top: 1.35rem;
       align-items: center;
     }
@@ -571,7 +571,7 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <a class="brand" href="#home">
-        <img src="Screenshots/logohorigental.png" alt="TrackMate logo" />
+        <img src="Screenshots/logohorigental.png" alt="Where Is My Bus logo" />
       </a>
 
       <nav class="nav-links">
@@ -582,13 +582,13 @@
 
       <button class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
 
-      <a class="btn btn-primary" href="https://trackmaterce.onrender.com/">Open TrackMate</a>
+      <a class="btn btn-primary" href="https://whereismybus.app/">Open Where Is My Bus</a>
     </div>
     <div class="container mobile-menu" id="mobileMenu">
       <a href="#features">Features</a>
       <a href="#screens">Screens</a>
       <a href="#stories">Highlights</a>
-      <a href="frontend/index.html">Open TrackMate</a>
+      <a href="frontend/index.html">Open Where Is My Bus</a>
     </div>
   </header>
 
@@ -602,13 +602,13 @@
             <span class="accent">clear and on time.</span>
           </h1>
           <p>
-            TrackMate gives students, drivers, and administrators one clean system for live bus visibility,
+            Where Is My Bus gives students, drivers, and administrators one clean system for live bus visibility,
             ETA updates, push notifications, SOS alerts, and route-level control. This root page now uses
             your orange-and-white brand direction with your real logo and screenshots.
           </p>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="https://trackmaterce.onrender.com/login" target="_blank" rel="noopener">Launch App</a>
+            <a class="btn btn-primary" href="https://whereismybus.app/login" target="_blank" rel="noopener">Launch App</a>
             <a class="btn btn-secondary" href="#screens">View Screens</a>
           </div>
 
@@ -630,7 +630,7 @@
 
         <div class="hero-panel">
           <div class="panel-card">
-            <img src="Screenshots/admin-dashboard.png" alt="TrackMate admin dashboard" />
+            <img src="Screenshots/admin-dashboard.png" alt="Where Is My Bus admin dashboard" />
           </div>
           <div class="panel-float">
             <h3>Admin control with real-time context</h3>
@@ -685,28 +685,28 @@
 
         <div class="showcase-grid">
           <article class="shot-card">
-            <img src="Screenshots/login-page.png" alt="TrackMate login page" />
+            <img src="Screenshots/login-page.png" alt="Where Is My Bus login page" />
             <div class="caption">
               <strong>Login experience</strong>
               <span>Uses the orange-and-white brand direction with a cleaner first impression.</span>
             </div>
           </article>
           <article class="shot-card">
-            <img src="Screenshots/Student_Dashboard-2.jpeg" alt="TrackMate student dashboard" />
+            <img src="Screenshots/Student_Dashboard-2.jpeg" alt="Where Is My Bus student dashboard" />
             <div class="caption">
               <strong>Student dashboard</strong>
               <span>Clear route, stop, and trip information for daily travel decisions.</span>
             </div>
           </article>
           <article class="shot-card">
-            <img src="Screenshots/admin-dashboard.png" alt="TrackMate admin dashboard" />
+            <img src="Screenshots/admin-dashboard.png" alt="Where Is My Bus admin dashboard" />
             <div class="caption">
               <strong>Admin dashboard</strong>
               <span>Operations, visibility, and management tools collected in one view.</span>
             </div>
           </article>
           <article class="shot-card">
-            <img src="Screenshots/Push-Notifications.jpeg" alt="TrackMate push notifications" />
+            <img src="Screenshots/Push-Notifications.jpeg" alt="Where Is My Bus push notifications" />
             <div class="caption">
               <strong>Push notifications</strong>
               <span>Arrival updates and important alerts stay clear and on-brand.</span>
@@ -751,13 +751,13 @@
       <div class="container">
         <div class="cta-shell">
           <div>
-            <h2>TrackMate, presented in your actual brand.</h2>
+            <h2>Where Is My Bus, presented in your actual brand.</h2>
             <p>
               This root page now matches the orange-and-white direction and pulls directly from your existing logo
               and screenshots so it feels connected to the real app.
             </p>
           </div>
-          <a class="btn btn-primary" href="https://trackmaterce.onrender.com/login" target="_blank" rel="noopener">Go to Login</a>
+          <a class="btn btn-primary" href="https://whereismybus.app/login" target="_blank" rel="noopener">Go to Login</a>
         </div>
       </div>
     </section>
@@ -765,7 +765,7 @@
 
   <footer class="footer">
     <div class="container footer-inner">
-      <span>© <span id="year"></span> TrackMate. Smart campus bus tracking.</span>
+      <span>© <span id="year"></span> Where Is My Bus. Smart campus bus tracking.</span>
       <span>Brand palette: orange, white, warm neutrals.</span>
     </div>
   </footer>

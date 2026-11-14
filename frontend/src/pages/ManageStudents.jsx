@@ -9,13 +9,15 @@ import {
   User, X, Bus, MapPin, CheckCircle, Clock, Upload, FileSpreadsheet, AlertTriangle, Loader2, Filter, ChevronDown, Route, CheckSquare, Square, MousePointerClick
 } from 'lucide-react';
 import TrackMateLoader from '../components/TrackMateLoader';
+import { apiCache, CACHE_TTL } from '../utils/apiCache';
+import { SkeletonGrid } from '../components/Skeletons';
 
 const blankForm = { username: '', name: '', phone: '', email: '', busId: '', stopId: '' };
 
 /* Stat Card Component */
-const StatCard = ({ icon: Icon, label, value, subtitle, color = 'blue' }) => {
+const StatCard = ({ icon: Icon, label, value, subtitle, color = 'burgundy' }) => {
   const colors = {
-    blue: 'from-blue-500 to-blue-600',
+    burgundy: 'from-[#690907] to-[#82110f]',
     emerald: 'from-emerald-500 to-emerald-600',
     amber: 'from-amber-500 to-amber-600'
   };
@@ -46,8 +48,8 @@ const StudentCard = ({ student, assignment, onEdit, onDelete, selectionMode, isS
 
   return (
     <div
-      className={`card p-4 transition-all group cursor-pointer ${isSelected ? 'border-blue-500 bg-blue-500/5 ring-1 ring-blue-500/30'
-        : 'hover:border-blue-500/30'
+      className={`card p-4 transition-all group cursor-pointer ${isSelected ? 'border-[#690907] bg-[#690907]/5 ring-1 ring-[#690907]/30'
+        : 'hover:border-[#690907]/30'
         }`}
       onClick={handleCardClick}
     >
@@ -56,7 +58,7 @@ const StudentCard = ({ student, assignment, onEdit, onDelete, selectionMode, isS
           {selectionMode && (
             <div className="flex-shrink-0">
               {isSelected
-                ? <CheckSquare className="w-5 h-5 text-blue-400" />
+                ? <CheckSquare className="w-5 h-5 text-[#690907]" />
                 : <Square className="w-5 h-5 text-slate-500" />
               }
             </div>
@@ -95,11 +97,11 @@ const StudentCard = ({ student, assignment, onEdit, onDelete, selectionMode, isS
       {assignment && (
         <div className="bg-slate-800/50 rounded-lg p-3 space-y-1.5 mb-3">
           <div className="flex items-center gap-2 text-sm">
-            <Bus className="w-4 h-4 text-blue-400" />
+            <Bus className="w-4 h-4 text-[#690907]" />
             <span className="text-slate-300">{assignment.bus?.name || 'No bus'}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <MapPin className="w-4 h-4 text-blue-400" />
+            <MapPin className="w-4 h-4 text-[#690907]" />
             <span className="text-slate-300 truncate">
               {assignment.stop ? `${assignment.stop.sequence}. ${assignment.stop.name}` : 'No stop'}
             </span>
@@ -111,7 +113,7 @@ const StudentCard = ({ student, assignment, onEdit, onDelete, selectionMode, isS
         <div className="flex items-center justify-end gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(student); }}
-            className="p-2 rounded-lg text-blue-400 hover:bg-blue-500/20 transition"
+            className="p-2 rounded-lg text-[#690907] hover:bg-[#690907]/20 transition"
             title="Edit student"
           >
             <Edit2 className="w-4 h-4" />
@@ -148,7 +150,9 @@ const ManageStudents = () => {
   const [editingStudent, setEditingStudent] = useState(null);
   const [form, setForm] = useState(blankForm);
   const [confirmState, setConfirmState] = useState({ open: false, target: null });
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   // CSV Upload state
   const [csvModalOpen, setCsvModalOpen] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
@@ -161,7 +165,8 @@ const ManageStudents = () => {
   const [bulkConfirm, setBulkConfirm] = useState(false);
 
   const loadStudents = async () => {
-    setLoading(true);
+    if (!hasLoaded) setLoading(true);
+    else setIsRefreshing(true);
     try {
       const [studentsRes, assignmentsRes, busesRes, routesRes] = await Promise.all([
         api.get('/admin/students'),
@@ -179,10 +184,12 @@ const ManageStudents = () => {
       setAssignments(assignmentMap);
       setBuses(busesRes.data || []);
       setRoutes(routesRes.data || []);
+      setHasLoaded(true);
     } catch (error) {
       toast.error('Unable to load students');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -458,7 +465,7 @@ const ManageStudents = () => {
             </button>
             <button
               onClick={openCreate}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition sm:w-auto flex-1"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition sm:w-auto flex-1"
             >
               <Plus className="w-5 h-5" />
               Add Student
@@ -466,7 +473,7 @@ const ManageStudents = () => {
             <button
               onClick={() => { setSelectionMode(!selectionMode); setSelectedIds(new Set()); }}
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition sm:w-auto flex-1 ${selectionMode
-                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
+                ? 'bg-[#690907]/20 text-[#690907] border border-[#690907]/50'
                 : 'border border-white/10 text-slate-300 hover:bg-white/5 hover:border-white/20'
                 }`}
             >
@@ -478,7 +485,7 @@ const ManageStudents = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <StatCard icon={Users} label="Total Students" value={students.length} subtitle="Registered" color="blue" />
+          <StatCard icon={Users} label="Total Students" value={students.length} subtitle="Registered" color="burgundy" />
           <StatCard icon={CheckCircle} label="Assigned" value={assignedCount} subtitle="To buses" color="emerald" />
           <StatCard icon={Clock} label="Pending" value={unassigned} subtitle="Awaiting" color="amber" />
         </div>
@@ -495,7 +502,7 @@ const ManageStudents = () => {
                 placeholder="Search by name, roll number, phone, email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               />
               {search && (
                 <button
@@ -513,7 +520,7 @@ const ManageStudents = () => {
               <select
                 value={busFilter}
                 onChange={(e) => setBusFilter(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-[#690907]/50 appearance-none cursor-pointer"
               >
                 <option value="">All Buses</option>
                 {buses.map((bus) => (
@@ -531,7 +538,7 @@ const ManageStudents = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-[#690907]/50 appearance-none cursor-pointer"
               >
                 <option value="">All Status</option>
                 <option value="assigned">Assigned</option>
@@ -546,7 +553,7 @@ const ManageStudents = () => {
               <select
                 value={routeFilter}
                 onChange={(e) => setRouteFilter(e.target.value)}
-                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-800/50 border border-white/5 text-white focus:outline-none focus:border-[#690907]/50 appearance-none cursor-pointer"
               >
                 <option value="">All Routes</option>
                 {routes.map((route) => (
@@ -572,25 +579,25 @@ const ManageStudents = () => {
                 </button>
               )}
               {search && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#E8D2B5] text-xs">
                   Search: "{search.length > 15 ? search.slice(0, 15) + '…' : search}"
                   <button onClick={() => setSearch('')} className="ml-0.5 hover:text-white"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {busFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#E8D2B5] text-xs">
                   Bus: {buses.find(b => b._id === busFilter)?.name || 'Unknown'}
                   <button onClick={() => setBusFilter('')} className="ml-0.5 hover:text-white"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {routeFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#E8D2B5] text-xs">
                   Route: {routes.find(r => r._id === routeFilter)?.name || 'Unknown'}
                   <button onClick={() => setRouteFilter('')} className="ml-0.5 hover:text-white"><X className="w-3 h-3" /></button>
                 </span>
               )}
               {statusFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#690907]/15 text-[#E8D2B5] text-xs">
                   {statusFilter === 'assigned' ? '✓ Assigned' : '⏳ Pending'}
                   <button onClick={() => setStatusFilter('')} className="ml-0.5 hover:text-white"><X className="w-3 h-3" /></button>
                 </span>
@@ -649,7 +656,7 @@ const ManageStudents = () => {
             <button
               type="submit"
               form="student-form"
-              className="flex-1 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] transition"
             >
               {editingStudent ? 'Save Changes' : 'Add Student'}
             </button>
@@ -662,7 +669,7 @@ const ManageStudents = () => {
             <input
               value={form.username}
               onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., 21CS101"
               required
             />
@@ -674,7 +681,7 @@ const ManageStudents = () => {
                 type="text"
                 value={form.password}
                 onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
                 placeholder="Leave blank to keep current"
               />
             </div>
@@ -684,7 +691,7 @@ const ManageStudents = () => {
             <input
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., John Doe"
             />
           </div>
@@ -694,7 +701,7 @@ const ManageStudents = () => {
               type="tel"
               value={form.phone}
               onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., +1 234 567 8900"
             />
           </div>
@@ -704,7 +711,7 @@ const ManageStudents = () => {
               type="email"
               value={form.email}
               onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#690907]/50"
               placeholder="e.g., student@example.com"
               required
             />
@@ -737,7 +744,7 @@ const ManageStudents = () => {
                       }
                     }
                   }}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-[#690907]/50"
                 >
                   <option value="">Select a bus (optional)</option>
                   {buses.map((bus) => (
@@ -753,14 +760,14 @@ const ManageStudents = () => {
                   <label className="text-sm text-slate-300 mb-1.5 block">Assign Stop (Optional)</label>
                   {loadingStops ? (
                     <div className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-400">
-                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-[#690907] border-t-transparent rounded-full animate-spin"></div>
                       Loading stops...
                     </div>
                   ) : stops.length > 0 ? (
                     <select
                       value={form.stopId}
                       onChange={(e) => setForm((prev) => ({ ...prev, stopId: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-blue-500/50"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/10 text-white focus:outline-none focus:border-[#690907]/50"
                     >
                       <option value="">Select a stop (optional)</option>
                       {stops.map((stop) => (
@@ -800,8 +807,8 @@ const ManageStudents = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                  <FileSpreadsheet className="w-5 h-5 text-blue-400" />
+                <div className="w-10 h-10 rounded-xl bg-[#690907]/20 flex items-center justify-center">
+                  <FileSpreadsheet className="w-5 h-5 text-[#690907]" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Bulk Upload Students</h3>
@@ -826,7 +833,7 @@ const ManageStudents = () => {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex flex-col items-center justify-center gap-2 px-6 py-8 rounded-xl border-2 border-dashed border-white/10 hover:border-blue-500/50 text-slate-400 hover:text-blue-400 transition cursor-pointer"
+                  className="w-full flex flex-col items-center justify-center gap-2 px-6 py-8 rounded-xl border-2 border-dashed border-white/10 hover:border-[#690907]/50 text-slate-400 hover:text-[#690907] transition cursor-pointer"
                 >
                   <Upload className="w-8 h-8" />
                   <span className="text-sm font-medium">{csvFile ? csvFile.name : 'Click to select CSV file'}</span>
@@ -856,7 +863,7 @@ const ManageStudents = () => {
                           <tr key={i} className="border-t border-white/5 hover:bg-white/5">
                             <td className="px-3 py-2 text-slate-500">{i + 1}</td>
                             <td className="px-3 py-2 text-white">{row.fullname || row.name || '—'}</td>
-                            <td className="px-3 py-2 text-blue-400 font-mono">{row.rollno || row.rollnumber || row.username || '—'}</td>
+                            <td className="px-3 py-2 text-[#690907] font-mono">{row.rollno || row.rollnumber || row.username || '—'}</td>
                             <td className="px-3 py-2 text-slate-300">{row.email || row.emailid || row.mailid || '—'}</td>
                             <td className="px-3 py-2 text-slate-400">{row.busname || row.bus || '—'}</td>
                           </tr>
@@ -910,7 +917,7 @@ const ManageStudents = () => {
                 <button
                   onClick={handleCsvUpload}
                   disabled={!csvFile || csvUploading}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#690907] text-white font-medium hover:bg-[#690907] disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
                   {csvUploading ? (
                     <>
@@ -939,7 +946,7 @@ const ManageStudents = () => {
           <div className="w-px h-6 bg-white/10" />
           <button
             onClick={selectAll}
-            className="text-xs text-blue-400 hover:text-blue-300 font-medium whitespace-nowrap"
+            className="text-xs text-[#690907] hover:text-[#E8D2B5] font-medium whitespace-nowrap"
           >
             Select all ({filteredStudents.length})
           </button>
